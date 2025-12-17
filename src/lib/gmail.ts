@@ -38,32 +38,22 @@ export const getGmailClient = (accessToken: string, refreshToken?: string) => {
   return google.gmail({ version: 'v1', auth });
 };
 
-// 할인 관련 이메일 검색 키워드
-const DEAL_KEYWORDS = [
-  '할인',
-  '세일',
-  'SALE',
-  '쿠폰',
-  'coupon',
-  '프로모션',
-  'promotion',
-  '특가',
-  '이벤트',
-  '무료배송',
-  '% OFF',
-  '% 할인',
-  '원 할인',
+// TVING 관련 이메일만 검색
+const SEARCH_KEYWORDS = [
+  'tving',
+  'TVING',
+  '티빙',
 ];
 
-export const searchDealEmails = async (
+export const searchTvingEmails = async (
   accessToken: string,
   refreshToken?: string,
-  maxResults: number = 20
+  maxResults: number = 50
 ) => {
   const gmail = getGmailClient(accessToken, refreshToken);
   
-  // 할인 관련 키워드로 검색 쿼리 생성
-  const query = DEAL_KEYWORDS.map(keyword => `subject:${keyword}`).join(' OR ');
+  // tving 관련 키워드로 검색 쿼리 생성
+  const query = SEARCH_KEYWORDS.map(keyword => `(subject:${keyword} OR from:${keyword})`).join(' OR ');
   
   try {
     const response = await gmail.users.messages.list({
@@ -107,7 +97,7 @@ export const searchDealEmails = async (
         subject,
         from,
         date,
-        body: body.substring(0, 2000), // 본문은 2000자까지만
+        body: body.substring(0, 2000),
         snippet: email.data.snippet || '',
       });
     }
@@ -119,9 +109,11 @@ export const searchDealEmails = async (
   }
 };
 
+// 기존 함수도 유지 (호환성)
+export const searchDealEmails = searchTvingEmails;
+
 export const getUserInfo = async (accessToken: string) => {
   const oauth2 = google.oauth2({ version: 'v2', auth: setCredentials(accessToken) });
   const { data } = await oauth2.userinfo.get();
   return data;
 };
-

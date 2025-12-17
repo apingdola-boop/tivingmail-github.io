@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import { RefreshCw, Mail, Check, Globe, Lock, Sparkles, ArrowRight } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { RefreshCw, Mail, Check, Globe, Lock, Sparkles, ArrowRight, Tv } from 'lucide-react';
 import Header from '@/components/Header';
 import { POST_CATEGORIES, type PostCategory, type EmailData } from '@/types';
 
@@ -16,6 +16,7 @@ export default function SyncPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [emails, setEmails] = useState<ProcessedEmail[]>([]);
   const [step, setStep] = useState<'sync' | 'select' | 'done'>('sync');
+  const [autoMode, setAutoMode] = useState(true); // 자동 모드 기본값
 
   const handleSync = async () => {
     setIsLoading(true);
@@ -26,19 +27,56 @@ export default function SyncPage() {
       
       const data = await response.json();
       
-      if (data.emails) {
-        setEmails(data.emails.map((email: EmailData) => ({
+      if (data.emails && data.emails.length > 0) {
+        const processedEmails = data.emails.map((email: EmailData) => ({
           ...email,
-          selected: false,
+          selected: true, // 기본으로 모두 선택
           isPublic: true,
-          category: '기타' as PostCategory,
+          category: '뉴스/소식' as PostCategory,
           customTitle: email.subject,
-        })));
-        setStep('select');
+        }));
+        
+        setEmails(processedEmails);
+        
+        // 자동 모드면 바로 업로드
+        if (autoMode) {
+          await autoUpload(processedEmails);
+        } else {
+          setStep('select');
+        }
+      } else {
+        alert('TVING 관련 이메일을 찾지 못했습니다.');
+        setIsLoading(false);
       }
     } catch (error) {
       console.error('동기화 실패:', error);
       alert('이메일 동기화에 실패했습니다. 다시 시도해주세요.');
+      setIsLoading(false);
+    }
+  };
+
+  const autoUpload = async (emailsToUpload: ProcessedEmail[]) => {
+    try {
+      for (const email of emailsToUpload) {
+        await fetch('/api/deals', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            title: email.customTitle,
+            description: email.snippet,
+            original_email_subject: email.subject,
+            original_email_from: email.from,
+            original_email_date: email.date,
+            original_email_body: email.body,
+            category: '뉴스/소식',
+            is_public: true,
+          }),
+        });
+      }
+      setStep('done');
+    } catch (error) {
+      console.error('자동 업로드 실패:', error);
+      alert('업로드에 실패했습니다.');
     } finally {
       setIsLoading(false);
     }
@@ -126,16 +164,42 @@ export default function SyncPage() {
           {/* 동기화 단계 */}
           {step === 'sync' && (
             <div className="post-card p-12 text-center">
-              <div className="w-24 h-24 mx-auto mb-6 rounded-3xl bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-secondary)] flex items-center justify-center animate-float">
-                <Mail className="w-12 h-12 text-white" />
+              <div className="w-24 h-24 mx-auto mb-6 rounded-3xl bg-gradient-to-br from-red-500 to-pink-500 flex items-center justify-center animate-float">
+                <Tv className="w-12 h-12 text-white" />
               </div>
               <h1 className="text-3xl font-bold text-white mb-4">
-                이메일 동기화
+                TVING 이메일 동기화
               </h1>
               <p className="text-gray-400 mb-8 max-w-md mx-auto">
-                Gmail에서 이메일을 불러옵니다.
-                공유하고 싶은 이메일만 선택할 수 있습니다.
+                Gmail에서 TVING 관련 이메일을 자동으로 찾아서 공유합니다.
+                <br />
+                <span className="text-[var(--color-primary)]">tving, 티빙</span> 키워드가 포함된 이메일을 검색합니다.
               </p>
+
+              {/* 자동/수동 모드 선택 */}
+              <div className="flex items-center justify-center gap-4 mb-8">
+                <button
+                  onClick={() => setAutoMode(true)}
+                  className={`px-6 py-3 rounded-xl transition-all ${
+                    autoMode
+                      ? 'bg-[var(--color-primary)] text-white'
+                      : 'bg-white/5 text-gray-400'
+                  }`}
+                >
+                  🚀 자동 업로드
+                </button>
+                <button
+                  onClick={() => setAutoMode(false)}
+                  className={`px-6 py-3 rounded-xl transition-all ${
+                    !autoMode
+                      ? 'bg-[var(--color-primary)] text-white'
+                      : 'bg-white/5 text-gray-400'
+                  }`}
+                >
+                  ✋ 수동 선택
+                </button>
+              </div>
+
               <button
                 onClick={handleSync}
                 disabled={isLoading}
@@ -144,28 +208,28 @@ export default function SyncPage() {
                 {isLoading ? (
                   <>
                     <RefreshCw className="w-5 h-5 animate-spin" />
-                    이메일 불러오는 중...
+                    TVING 이메일 검색 중...
                   </>
                 ) : (
                   <>
                     <Sparkles className="w-5 h-5" />
-                    이메일 불러오기
+                    TVING 이메일 찾기
                   </>
                 )}
               </button>
             </div>
           )}
 
-          {/* 선택 단계 */}
+          {/* 선택 단계 (수동 모드) */}
           {step === 'select' && (
             <div>
               <div className="flex items-center justify-between mb-6">
                 <div>
                   <h1 className="text-2xl font-bold text-white">
-                    공유할 이메일 선택
+                    TVING 이메일 선택
                   </h1>
                   <p className="text-gray-400">
-                    {emails.length}개의 이메일을 찾았습니다
+                    {emails.length}개의 TVING 이메일을 찾았습니다
                   </p>
                 </div>
                 <div className="flex items-center gap-4">
@@ -195,7 +259,6 @@ export default function SyncPage() {
                       email.selected ? 'ring-2 ring-[var(--color-primary)]' : ''
                     }`}
                   >
-                    {/* 헤더 */}
                     <div className="flex items-start gap-4 mb-4">
                       <button
                         onClick={() => toggleEmailSelection(index)}
@@ -217,15 +280,12 @@ export default function SyncPage() {
                       </div>
                     </div>
 
-                    {/* 미리보기 */}
                     <p className="text-gray-400 text-sm mb-4 line-clamp-2">
                       {email.snippet}
                     </p>
 
-                    {/* 옵션 (선택된 경우에만 표시) */}
                     {email.selected && (
                       <div className="pt-4 border-t border-white/10 space-y-4 animate-fade-in-up">
-                        {/* 제목 수정 */}
                         <div>
                           <label className="block text-sm text-gray-400 mb-2">
                             제목 (수정 가능)
@@ -239,7 +299,6 @@ export default function SyncPage() {
                         </div>
 
                         <div className="grid grid-cols-2 gap-4">
-                          {/* 카테고리 */}
                           <div>
                             <label className="block text-sm text-gray-400 mb-2">
                               카테고리
@@ -255,7 +314,6 @@ export default function SyncPage() {
                             </select>
                           </div>
 
-                          {/* 공개 여부 */}
                           <div>
                             <label className="block text-sm text-gray-400 mb-2">
                               공개 설정
@@ -301,10 +359,10 @@ export default function SyncPage() {
                 <Check className="w-12 h-12 text-white" />
               </div>
               <h1 className="text-3xl font-bold text-white mb-4">
-                공유 완료! 🎉
+                TVING 이메일 공유 완료! 🎉
               </h1>
               <p className="text-gray-400 mb-8">
-                {selectedCount}개의 게시물이 성공적으로 공유되었습니다.
+                {emails.length}개의 TVING 이메일이 성공적으로 공유되었습니다.
               </p>
               <div className="flex items-center justify-center gap-4">
                 <a href="/feed" className="btn-primary">
