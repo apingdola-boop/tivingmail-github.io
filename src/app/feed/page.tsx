@@ -32,29 +32,59 @@ type SortType = 'latest' | 'popular' | 'likes';
 export default function FeedPage() {
   const [posts, setPosts] = useState<Post[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [syncMessage, setSyncMessage] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState<SortType>('latest');
   const [likedPosts, setLikedPosts] = useState<Set<string>>(new Set());
 
-  // Supabase에서 실제 데이터 가져오기
-  useEffect(() => {
-    const fetchPosts = async () => {
-      setIsLoading(true);
-      try {
-        const response = await fetch('/api/deals?public=true');
-        const data = await response.json();
-        
-        if (data.deals) {
-          setPosts(data.deals);
-        }
-      } catch (error) {
-        console.error('피드 로드 실패:', error);
-      } finally {
-        setIsLoading(false);
+  // 피드 데이터 가져오기
+  const fetchPosts = async () => {
+    setIsLoading(true);
+    try {
+      const response = await fetch('/api/deals?public=true');
+      const data = await response.json();
+      
+      if (data.deals) {
+        setPosts(data.deals);
       }
-    };
+    } catch (error) {
+      console.error('피드 로드 실패:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
+  // 이메일 수동 동기화
+  const handleSync = async () => {
+    setIsSyncing(true);
+    setSyncMessage(null);
+    try {
+      const response = await fetch('/api/cron/sync-emails', {
+        method: 'POST',
+      });
+      const data = await response.json();
+      
+      if (data.success) {
+        setSyncMessage(`✅ ${data.totalSynced}개의 새 이메일이 동기화되었습니다!`);
+        // 피드 새로고침
+        await fetchPosts();
+      } else {
+        setSyncMessage('⚠️ 동기화할 이메일이 없거나 먼저 로그인이 필요합니다.');
+      }
+    } catch (error) {
+      console.error('동기화 실패:', error);
+      setSyncMessage('❌ 동기화에 실패했습니다.');
+    } finally {
+      setIsSyncing(false);
+      // 5초 후 메시지 숨기기
+      setTimeout(() => setSyncMessage(null), 5000);
+    }
+  };
+
+  // 초기 로드
+  useEffect(() => {
     fetchPosts();
   }, []);
 
@@ -96,14 +126,33 @@ export default function FeedPage() {
       <main className="pt-24 pb-12 px-4">
         <div className="max-w-7xl mx-auto">
           {/* 페이지 헤더 */}
-          <div className="mb-8">
-            <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">
-              📬 <span className="gradient-text">정보</span> 피드
-            </h1>
-            <p className="text-gray-400">
-              사용자들이 공유한 유용한 이메일 정보를 확인하세요
-            </p>
+          <div className="mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div>
+              <h1 className="text-3xl md:text-4xl font-bold text-white mb-2">
+                📬 <span className="gradient-text">정보</span> 피드
+              </h1>
+              <p className="text-gray-400">
+                사용자들이 공유한 유용한 이메일 정보를 확인하세요
+              </p>
+            </div>
+            
+            {/* 동기화 버튼 */}
+            <button
+              onClick={handleSync}
+              disabled={isSyncing}
+              className="btn-secondary flex items-center gap-2 self-start md:self-auto"
+            >
+              <RefreshCw className={`w-4 h-4 ${isSyncing ? 'animate-spin' : ''}`} />
+              {isSyncing ? '동기화 중...' : '이메일 새로고침'}
+            </button>
           </div>
+
+          {/* 동기화 메시지 */}
+          {syncMessage && (
+            <div className="mb-6 p-4 rounded-xl bg-white/5 border border-white/10 text-center animate-fade-in-up">
+              <p className="text-white">{syncMessage}</p>
+            </div>
+          )}
 
           {/* 검색 및 필터 */}
           <div className="flex flex-col lg:flex-row gap-4 mb-8">
