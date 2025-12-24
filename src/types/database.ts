@@ -138,3 +138,5 @@ export type DealWithUser = Deal & {
   user: Pick<User, 'id' | 'name' | 'avatar_url'>;
 };
 
+
+

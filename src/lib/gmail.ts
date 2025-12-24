@@ -38,11 +38,11 @@ export const getGmailClient = (accessToken: string, refreshToken?: string) => {
   return google.gmail({ version: 'v1', auth });
 };
 
-// TVING 관련 이메일 검색 키워드
+// 이메일 자동 공유 키워드 (메일 제목에 있으면 공유)
 const SEARCH_KEYWORDS = [
-  'tving',
-  'TVING',
-  '티빙',
+  '[TIVING]',
+  '확인',
+  '안내',
 ];
 
 export const searchTvingEmails = async (
@@ -52,9 +52,9 @@ export const searchTvingEmails = async (
 ) => {
   const gmail = getGmailClient(accessToken, refreshToken);
   
-  // 제목, 발신자, 본문 어디에든 tving이 포함된 이메일 검색
-  // Gmail 검색에서 키워드만 쓰면 제목+본문+발신자 모두 검색됨
-  const query = SEARCH_KEYWORDS.join(' OR ');
+  // 메일 제목에 키워드가 포함된 이메일만 검색
+  // Gmail 검색에서 subject: 연산자를 사용하면 제목만 검색
+  const query = SEARCH_KEYWORDS.map(keyword => `subject:"${keyword}"`).join(' OR ');
   
   try {
     const response = await gmail.users.messages.list({
