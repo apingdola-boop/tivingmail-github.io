@@ -1,16 +1,23 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
 
-// 비밀 키 (Google Apps Script에서 이 키를 사용)
-const WEBHOOK_SECRET = process.env.WEBHOOK_SECRET || 'tving-mail-secret-2024';
+// 🔐 비밀 키는 반드시 환경 변수로만 설정 (코드에 노출 금지)
+const WEBHOOK_SECRET = process.env.WEBHOOK_SECRET;
 
 // Google Apps Script에서 호출하는 웹훅 API
 export async function POST(request: NextRequest) {
   try {
+    // 환경 변수 미설정 시 거부
+    if (!WEBHOOK_SECRET) {
+      console.error('❌ WEBHOOK_SECRET 환경 변수가 설정되지 않았습니다');
+      return NextResponse.json({ error: 'Server configuration error' }, { status: 500 });
+    }
+
     const body = await request.json();
     
     // 비밀 키 확인
     if (body.secret !== WEBHOOK_SECRET) {
+      console.warn('⚠️ 잘못된 웹훅 시크릿으로 접근 시도');
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
