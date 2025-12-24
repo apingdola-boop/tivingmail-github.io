@@ -105,19 +105,19 @@ export async function GET(request: NextRequest) {
       console.log(`📧 ${emails.length}개의 TVING 이메일 발견`);
 
       if (emails.length > 0) {
-        // 기존에 저장된 이메일 제목 목록 조회 (중복 방지)
+        // 기존에 저장된 이메일 조회 (제목 + 날짜로 중복 방지 - 같은 제목도 다른 시간에 오면 허용)
         const { data: existingDeals } = await supabase
           .from('deals')
-          .select('original_email_subject')
+          .select('original_email_subject, original_email_date')
           .eq('user_id', userId);
 
-        const existingSubjects = new Set(
-          existingDeals?.map(d => d.original_email_subject) || []
+        const existingKeys = new Set(
+          existingDeals?.map(d => `${d.original_email_subject}|${d.original_email_date}`) || []
         );
 
-        // 새 이메일만 필터링
+        // 새 이메일만 필터링 (제목+날짜 조합으로 체크)
         const newEmails = emails.filter(
-          email => !existingSubjects.has(email.subject)
+          email => !existingKeys.has(`${email.subject}|${email.date}`)
         );
 
         console.log(`🆕 ${newEmails.length}개의 새로운 이메일 저장 예정`);

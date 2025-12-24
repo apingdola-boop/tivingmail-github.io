@@ -140,3 +140,4 @@ export type DealWithUser = Deal & {
 
 
 
+

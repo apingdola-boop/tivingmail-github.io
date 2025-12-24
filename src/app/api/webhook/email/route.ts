@@ -22,24 +22,26 @@ export async function POST(request: NextRequest) {
 
     console.log('📧 웹훅으로 새 이메일 수신:', email.subject);
 
-    // 중복 확인
+    // 중복 확인 (제목 + 발신자 + 날짜로 체크 - 같은 제목도 다른 시간에 오면 허용)
+    const emailDate = email.date || new Date().toISOString();
     const { data: existing } = await supabase
       .from('deals')
       .select('id')
       .eq('original_email_subject', email.subject)
       .eq('original_email_from', email.from)
+      .eq('original_email_date', emailDate)
       .single();
 
     if (existing) {
-      console.log('⚠️ 이미 존재하는 이메일:', email.subject);
+      console.log('⚠️ 완전히 동일한 이메일:', email.subject);
       return NextResponse.json({ 
         success: true, 
-        message: '이미 존재하는 이메일입니다',
+        message: '완전히 동일한 이메일입니다',
         duplicate: true 
       });
     }
 
-    // 새 게시물 저장
+    // 새 게시물 저장 (같은 제목이라도 다른 시간에 온 메일은 허용)
     const { data: deal, error } = await supabase
       .from('deals')
       .insert({
@@ -86,6 +88,7 @@ export async function GET() {
     message: 'TVING 이메일 웹훅 API가 작동 중입니다' 
   });
 }
+
 
 
 
