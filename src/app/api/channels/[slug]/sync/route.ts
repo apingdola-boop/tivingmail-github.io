@@ -1,0 +1,134 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { supabase } from '@/lib/supabase';
+import { searchEmailsByKeywords } from '@/lib/gmail';
+import { cookies } from 'next/headers';
+
+// 채널 이메일 동기화
+export async function POST(
+  request: NextRequest,
+  { params }: { params: Promise<{ slug: string }> }
+) {
+  try {
+    const { slug } = await params;
+    
+    // 현재 로그인한 사용자 확인
+    const cookieStore = await cookies();
+    const userId = cookieStore.get('user_id')?.value;
+    const accessToken = cookieStore.get('access_token')?.value;
+
+    if (!userId || !accessToken) {
+      return NextResponse.json(
+        { error: '로그인이 필요합니다' },
+        { status: 401 }
+      );
+    }
+
+    // 채널 정보 조회
+    const { data: channel, error: channelError } = await supabase
+      .from('channels')
+      .select('*')
+      .eq('slug', slug)
+      .single();
+
+    if (channelError || !channel) {
+      return NextResponse.json(
+        { error: '채널을 찾을 수 없습니다' },
+        { status: 404 }
+      );
+    }
+
+    // 채널 소유자 확인
+    if (channel.owner_id !== userId) {
+      return NextResponse.json(
+        { error: '채널 소유자만 동기화할 수 있습니다' },
+        { status: 403 }
+      );
+    }
+
+    // 사용자의 refresh_token 가져오기
+    const { data: user } = await supabase
+      .from('users')
+      .select('google_refresh_token')
+      .eq('id', userId)
+      .single();
+
+    const refreshToken = user?.google_refresh_token;
+
+    // 채널 키워드로 이메일 검색
+    const keywords = channel.keywords || [];
+    if (keywords.length === 0) {
+      return NextResponse.json(
+        { error: '채널에 키워드가 설정되지 않았습니다' },
+        { status: 400 }
+      );
+    }
+
+    console.log(`🔄 채널 "${channel.name}" 이메일 동기화 시작...`);
+    console.log(`📝 키워드: ${keywords.join(', ')}`);
+
+    const emails = await searchEmailsByKeywords(
+      accessToken,
+      keywords,
+      refreshToken || undefined,
+      50
+    );
+
+    console.log(`📧 ${emails.length}개의 이메일 발견`);
+
+    // 기존 이메일 조회 (제목 + 날짜로 중복 방지)
+    const { data: existingDeals } = await supabase
+      .from('deals')
+      .select('original_email_subject, original_email_date')
+      .eq('channel_id', channel.id);
+
+    const existingKeys = new Set(
+      existingDeals?.map(d => `${d.original_email_subject}|${d.original_email_date}`) || []
+    );
+
+    // 새 이메일만 필터링
+    const newEmails = emails.filter(
+      email => !existingKeys.has(`${email.subject}|${email.date}`)
+    );
+
+    console.log(`🆕 ${newEmails.length}개의 새로운 이메일 저장 예정`);
+
+    // 새 이메일들을 deals 테이블에 저장
+    let savedCount = 0;
+    for (const email of newEmails) {
+      const { error: insertError } = await supabase
+        .from('deals')
+        .insert({
+          user_id: userId,
+          channel_id: channel.id,
+          title: email.subject,
+          description: email.snippet,
+          original_email_subject: email.subject,
+          original_email_from: email.from,
+          original_email_date: email.date,
+          original_email_body: email.body,
+          category: '뉴스/소식',
+          is_public: true,
+        } as Record<string, unknown>);
+
+      if (!insertError) {
+        savedCount++;
+      }
+    }
+
+    console.log(`✅ ${savedCount}개의 이메일 저장 완료!`);
+
+    return NextResponse.json({
+      success: true,
+      message: `${savedCount}개의 새 이메일이 동기화되었습니다`,
+      found: emails.length,
+      saved: savedCount,
+    });
+  } catch (error) {
+    console.error('채널 동기화 오류:', error);
+    return NextResponse.json(
+      { error: '이메일 동기화에 실패했습니다' },
+      { status: 500 }
+    );
+  }
+}
+

@@ -116,6 +116,75 @@ export const searchTvingEmails = async (
 // 기존 함수도 유지 (호환성)
 export const searchDealEmails = searchTvingEmails;
 
+// 🆕 채널별 키워드로 이메일 검색
+export const searchEmailsByKeywords = async (
+  accessToken: string,
+  keywords: string[],
+  refreshToken?: string,
+  maxResults: number = 50
+) => {
+  const gmail = getGmailClient(accessToken, refreshToken);
+  
+  // 채널의 키워드로 이메일 검색
+  const query = keywords.map(keyword => `subject:"${keyword}"`).join(' OR ');
+  
+  try {
+    const response = await gmail.users.messages.list({
+      userId: 'me',
+      q: query,
+      maxResults,
+    });
+
+    const messages = response.data.messages || [];
+    const emails = [];
+
+    for (const message of messages) {
+      const email = await gmail.users.messages.get({
+        userId: 'me',
+        id: message.id!,
+        format: 'full',
+      });
+
+      const headers = email.data.payload?.headers || [];
+      const subject = headers.find(h => h.name === 'Subject')?.value || '';
+      const from = headers.find(h => h.name === 'From')?.value || '';
+      const date = headers.find(h => h.name === 'Date')?.value || '';
+
+      // 이메일 본문 추출
+      let body = '';
+      const payload = email.data.payload;
+      
+      if (payload?.body?.data) {
+        body = Buffer.from(payload.body.data, 'base64').toString('utf-8');
+      } else if (payload?.parts) {
+        const textPart = payload.parts.find(
+          part => part.mimeType === 'text/plain' || part.mimeType === 'text/html'
+        );
+        if (textPart?.body?.data) {
+          body = Buffer.from(textPart.body.data, 'base64').toString('utf-8');
+        }
+      }
+
+      // 본문에서 HTML 태그 제거
+      const cleanBody = body.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+
+      emails.push({
+        id: message.id,
+        subject,
+        from,
+        date,
+        body: cleanBody.substring(0, 2000),
+        snippet: email.data.snippet || '',
+      });
+    }
+
+    return emails;
+  } catch (error) {
+    console.error('Gmail API 에러:', error);
+    throw error;
+  }
+};
+
 export const getUserInfo = async (accessToken: string) => {
   const oauth2 = google.oauth2({ version: 'v2', auth: setCredentials(accessToken) });
   const { data } = await oauth2.userinfo.get();

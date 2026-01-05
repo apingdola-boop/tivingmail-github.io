@@ -67,3 +67,8 @@ openssl rand -hex 32
 2. **환경 변수는 Netlify/Vercel 대시보드에서만 설정하세요**
 3. **Git에 `.env.local` 파일을 커밋하지 마세요**
 
+
+
+
+
+

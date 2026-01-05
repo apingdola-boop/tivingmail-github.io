@@ -1,201 +1,256 @@
+'use client';
+
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { Mail, Zap, Share2, Shield, ArrowRight, Sparkles, Users, Globe } from 'lucide-react';
-import Header from '@/components/Header';
+import { Mail, Zap, Share2, ArrowRight, Sparkles, Users, Plus } from 'lucide-react';
+
+interface Channel {
+  id: string;
+  name: string;
+  slug: string;
+  description: string;
+  keywords: string[];
+  icon: string;
+  color: string;
+  owner: {
+    name: string;
+    avatar_url: string;
+  };
+  deals: { count: number }[];
+}
 
 export default function Home() {
+  const [channels, setChannels] = useState<Channel[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchChannels = async () => {
+      try {
+        const res = await fetch('/api/channels');
+        const data = await res.json();
+        setChannels(data.channels || []);
+      } catch (error) {
+        console.error('채널 로딩 오류:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchChannels();
+  }, []);
+
   return (
-    <div className="min-h-screen">
-      <Header />
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+      {/* Header */}
+      <header className="border-b border-white/10 backdrop-blur-sm sticky top-0 z-50">
+        <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
+          <Link href="/" className="text-2xl font-bold text-white flex items-center gap-2">
+            📬 MailChannel
+          </Link>
+          <div className="flex items-center gap-4">
+            <Link 
+              href="/login" 
+              className="text-gray-300 hover:text-white transition-colors"
+            >
+              로그인
+            </Link>
+            <Link 
+              href="/create-channel"
+              className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors flex items-center gap-2"
+            >
+              <Plus className="w-4 h-4" />
+              채널 만들기
+            </Link>
+          </div>
+        </div>
+      </header>
       
       {/* 히어로 섹션 */}
-      <section className="pt-32 pb-20 px-4 relative overflow-hidden">
+      <section className="pt-20 pb-16 px-4 relative overflow-hidden">
         {/* 배경 효과 */}
         <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-[var(--color-primary)]/20 rounded-full blur-[100px]" />
-          <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-[var(--color-secondary)]/20 rounded-full blur-[100px]" />
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-[var(--color-accent)]/10 rounded-full blur-[150px]" />
+          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-500/20 rounded-full blur-[100px]" />
+          <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-pink-500/20 rounded-full blur-[100px]" />
         </div>
 
-        <div className="max-w-6xl mx-auto text-center relative z-10">
+        <div className="max-w-4xl mx-auto text-center relative z-10">
           {/* 뱃지 */}
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass mb-8 animate-fade-in-up">
-            <Sparkles className="w-4 h-4 text-[var(--color-accent)]" />
-            <span className="text-sm text-gray-300">이메일 정보를 스마트하게 공유하세요</span>
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 border border-white/20 mb-8">
+            <Sparkles className="w-4 h-4 text-yellow-400" />
+            <span className="text-sm text-gray-300">누구나 쉽게 이메일 채널을 만들 수 있어요</span>
           </div>
 
           {/* 메인 타이틀 */}
-          <h1 className="text-5xl md:text-7xl font-bold mb-6 animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
-            이메일 속 <span className="gradient-text">유용한 정보</span>를
+          <h1 className="text-4xl md:text-6xl font-bold text-white mb-6">
+            나만의 <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">이메일 채널</span>을
             <br />
-            함께 나누세요
+            만들어보세요
           </h1>
 
           {/* 서브 타이틀 */}
-          <p className="text-xl text-gray-400 mb-10 max-w-2xl mx-auto animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
-            Gmail을 연결하면 중요한 이메일을 쉽게 공유할 수 있습니다.
+          <p className="text-xl text-gray-400 mb-10 max-w-2xl mx-auto">
+            Google 로그인 한 번으로 특정 이메일을 자동으로 공유하는 채널을 만들 수 있어요.
             <br />
-            뉴스, 공지사항, 유용한 정보를 다른 사람들과 나눠보세요.
+            채널 링크만 공유하면 누구나 볼 수 있습니다!
           </p>
 
           {/* CTA 버튼 */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
-            <Link href="/login" className="btn-primary text-lg px-8 py-4 flex items-center gap-2 animate-pulse-glow">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <Link 
+              href="/create-channel" 
+              className="px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold rounded-xl flex items-center gap-2 transition-all shadow-lg shadow-purple-500/25"
+            >
               <Mail className="w-5 h-5" />
-              Gmail로 시작하기
+              채널 만들기
               <ArrowRight className="w-5 h-5" />
             </Link>
-            <Link href="/feed" className="btn-secondary text-lg px-8 py-4">
-              정보 피드 둘러보기
+            <Link 
+              href="/feed" 
+              className="px-8 py-4 bg-white/10 hover:bg-white/20 text-white rounded-xl transition-colors border border-white/20"
+            >
+              기존 피드 보기
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* 작동 방식 */}
+      <section className="py-16 px-4">
+        <div className="max-w-5xl mx-auto">
+          <h2 className="text-2xl md:text-3xl font-bold text-white text-center mb-12">
+            🚀 이렇게 작동해요
+          </h2>
+          
+          <div className="grid md:grid-cols-3 gap-8">
+            <div className="bg-white/5 border border-white/10 rounded-2xl p-8 text-center hover:bg-white/10 transition-colors">
+              <div className="w-16 h-16 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
+                <Mail className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="text-xl font-bold text-white mb-3">1. 채널 만들기</h3>
+              <p className="text-gray-400">
+                채널 이름과 이메일 필터 키워드를 설정하고 Google 로그인
+              </p>
+            </div>
+
+            <div className="bg-white/5 border border-white/10 rounded-2xl p-8 text-center hover:bg-white/10 transition-colors">
+              <div className="w-16 h-16 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center">
+                <Zap className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="text-xl font-bold text-white mb-3">2. 자동 동기화</h3>
+              <p className="text-gray-400">
+                설정한 키워드가 포함된 이메일이 자동으로 채널에 공유됨
+              </p>
+            </div>
+
+            <div className="bg-white/5 border border-white/10 rounded-2xl p-8 text-center hover:bg-white/10 transition-colors">
+              <div className="w-16 h-16 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center">
+                <Share2 className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="text-xl font-bold text-white mb-3">3. 링크 공유</h3>
+              <p className="text-gray-400">
+                채널 링크만 공유하면 누구나 로그인 없이 볼 수 있음
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 채널 목록 */}
+      <section className="py-16 px-4">
+        <div className="max-w-5xl mx-auto">
+          <div className="flex items-center justify-between mb-8">
+            <h2 className="text-2xl md:text-3xl font-bold text-white">
+              📺 공개 채널
+            </h2>
+            <Link 
+              href="/create-channel"
+              className="text-purple-400 hover:text-purple-300 flex items-center gap-1"
+            >
+              <Plus className="w-4 h-4" />
+              새 채널 만들기
             </Link>
           </div>
 
-          {/* 히어로 이미지/미리보기 */}
-          <div className="mt-16 relative animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
-            <div className="post-card max-w-2xl mx-auto p-8 text-left">
-              <div className="flex items-center gap-4 mb-4">
-                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-secondary)] flex items-center justify-center">
-                  <Mail className="w-6 h-6 text-white" />
-                </div>
-                <div>
-                  <p className="font-medium text-white">Gmail 자동 동기화</p>
-                  <p className="text-sm text-gray-400">방금 전</p>
-                </div>
-              </div>
-              <h3 className="text-xl font-bold text-white mb-2">
-                📢 [네이버] 12월 서비스 업데이트 안내
-              </h3>
-              <p className="text-gray-400 mb-4">
-                새로운 기능이 추가되었습니다. 더욱 편리해진 서비스를 확인해보세요...
-              </p>
-              <div className="flex gap-2">
-                <span className="badge bg-blue-500/20 text-blue-400 border border-blue-500/30">업데이트</span>
-                <span className="badge badge-public">
-                  <Globe className="w-3 h-3 mr-1" />
-                  공개
-                </span>
-              </div>
+          {isLoading ? (
+            <div className="text-center py-12">
+              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500 mx-auto mb-4"></div>
+              <p className="text-gray-400">채널 불러오는 중...</p>
             </div>
-          </div>
-        </div>
-      </section>
+          ) : channels.length === 0 ? (
+            <div className="text-center py-16 bg-white/5 border border-white/10 rounded-2xl">
+              <div className="text-6xl mb-4">📭</div>
+              <h3 className="text-xl font-semibold text-white mb-2">아직 채널이 없어요</h3>
+              <p className="text-gray-400 mb-6">첫 번째 채널을 만들어보세요!</p>
+              <Link 
+                href="/create-channel"
+                className="inline-flex items-center gap-2 px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors"
+              >
+                <Plus className="w-4 h-4" />
+                채널 만들기
+              </Link>
+            </div>
+          ) : (
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {channels.map((channel) => (
+                <Link
+                  key={channel.id}
+                  href={`/channel/${channel.slug}`}
+                  className="bg-white/5 border border-white/10 rounded-2xl p-6 hover:bg-white/10 transition-all hover:scale-[1.02] group"
+                >
+                  <div className="flex items-center gap-4 mb-4">
+                    <span 
+                      className="text-4xl p-3 rounded-xl"
+                      style={{ backgroundColor: `${channel.color}30` }}
+                    >
+                      {channel.icon}
+                    </span>
+                    <div>
+                      <h3 className="text-lg font-bold text-white group-hover:text-purple-300 transition-colors">
+                        {channel.name}
+                      </h3>
+                      <p className="text-sm text-gray-500">/channel/{channel.slug}</p>
+                    </div>
+                  </div>
+                  
+                  {channel.description && (
+                    <p className="text-gray-400 text-sm mb-4 line-clamp-2">
+                      {channel.description}
+                    </p>
+                  )}
+                  
+                  <div className="flex flex-wrap gap-2 mb-4">
+                    {channel.keywords.slice(0, 3).map((keyword, idx) => (
+                      <span 
+                        key={idx}
+                        className="px-2 py-1 text-xs rounded-full"
+                        style={{ 
+                          backgroundColor: `${channel.color}20`,
+                          color: channel.color
+                        }}
+                      >
+                        {keyword}
+                      </span>
+                    ))}
+                    {channel.keywords.length > 3 && (
+                      <span className="px-2 py-1 text-xs rounded-full bg-white/10 text-gray-400">
+                        +{channel.keywords.length - 3}
+                      </span>
+                    )}
+                  </div>
 
-      {/* 통계 섹션 */}
-      <section className="py-12 px-4">
-        <div className="max-w-4xl mx-auto">
-          <div className="grid grid-cols-3 gap-8">
-            <div className="text-center">
-              <div className="text-4xl font-bold gradient-text mb-2">1,234+</div>
-              <p className="text-gray-400">공유된 정보</p>
+                  <div className="flex items-center justify-between text-sm text-gray-500">
+                    <span>📧 {channel.deals?.[0]?.count || 0}개의 이메일</span>
+                    <span 
+                      className="px-3 py-1 rounded-full text-xs"
+                      style={{ backgroundColor: channel.color, color: 'white' }}
+                    >
+                      보기 →
+                    </span>
+                  </div>
+                </Link>
+              ))}
             </div>
-            <div className="text-center">
-              <div className="text-4xl font-bold gradient-text mb-2">567+</div>
-              <p className="text-gray-400">활성 사용자</p>
-            </div>
-            <div className="text-center">
-              <div className="text-4xl font-bold gradient-text mb-2">89%</div>
-              <p className="text-gray-400">만족도</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* 기능 소개 섹션 */}
-      <section className="py-20 px-4">
-        <div className="max-w-6xl mx-auto">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-4">
-            어떻게 <span className="gradient-text">작동</span>하나요?
-          </h2>
-          <p className="text-gray-400 text-center mb-16 max-w-xl mx-auto">
-            3단계로 간단하게 이메일 정보를 공유할 수 있어요
-          </p>
-
-          <div className="grid md:grid-cols-3 gap-8">
-            {/* 기능 1 */}
-            <div className="post-card p-8 text-center group">
-              <div className="w-16 h-16 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-secondary)] flex items-center justify-center transform group-hover:scale-110 transition-transform">
-                <Mail className="w-8 h-8 text-white" />
-              </div>
-              <h3 className="text-xl font-bold text-white mb-3">1. Gmail 연결</h3>
-              <p className="text-gray-400">
-                Google 계정으로 안전하게 로그인하고
-                Gmail 접근 권한을 허용합니다.
-              </p>
-            </div>
-
-            {/* 기능 2 */}
-            <div className="post-card p-8 text-center group">
-              <div className="w-16 h-16 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-[var(--color-secondary)] to-teal-400 flex items-center justify-center transform group-hover:scale-110 transition-transform">
-                <Zap className="w-8 h-8 text-white" />
-              </div>
-              <h3 className="text-xl font-bold text-white mb-3">2. 이메일 선택</h3>
-              <p className="text-gray-400">
-                공유하고 싶은 이메일을 선택하고
-                카테고리를 지정합니다.
-              </p>
-            </div>
-
-            {/* 기능 3 */}
-            <div className="post-card p-8 text-center group">
-              <div className="w-16 h-16 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center transform group-hover:scale-110 transition-transform">
-                <Share2 className="w-8 h-8 text-white" />
-              </div>
-              <h3 className="text-xl font-bold text-white mb-3">3. 선택적 공유</h3>
-              <p className="text-gray-400">
-                공개 또는 비공개로 설정하여
-                원하는 사람들과 정보를 나눕니다.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* 카테고리 섹션 */}
-      <section className="py-20 px-4">
-        <div className="max-w-6xl mx-auto">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">
-            다양한 <span className="gradient-text">카테고리</span>
-          </h2>
-          
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {[
-              { name: '뉴스/소식', icon: '📰', color: 'from-amber-500 to-orange-500' },
-              { name: '공지사항', icon: '📢', color: 'from-red-500 to-pink-500' },
-              { name: '이벤트', icon: '🎉', color: 'from-pink-500 to-purple-500' },
-              { name: '업데이트', icon: '🔄', color: 'from-blue-500 to-cyan-500' },
-              { name: '팁/정보', icon: '💡', color: 'from-green-500 to-emerald-500' },
-              { name: '리뷰/후기', icon: '⭐', color: 'from-purple-500 to-violet-500' },
-              { name: '질문/답변', icon: '❓', color: 'from-cyan-500 to-blue-500' },
-              { name: '기타', icon: '📌', color: 'from-gray-500 to-slate-500' },
-            ].map((cat) => (
-              <div key={cat.name} className="post-card p-4 text-center hover:scale-105 transition-transform cursor-pointer">
-                <div className={`w-12 h-12 mx-auto mb-3 rounded-xl bg-gradient-to-br ${cat.color} flex items-center justify-center text-2xl`}>
-                  {cat.icon}
-                </div>
-                <p className="font-medium text-white">{cat.name}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* 보안 안내 섹션 */}
-      <section className="py-20 px-4">
-        <div className="max-w-4xl mx-auto">
-          <div className="post-card p-8 md:p-12 flex flex-col md:flex-row items-center gap-8">
-            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center flex-shrink-0">
-              <Shield className="w-10 h-10 text-white" />
-            </div>
-            <div>
-              <h3 className="text-2xl font-bold text-white mb-3">
-                개인정보 보호를 최우선으로
-              </h3>
-              <p className="text-gray-400">
-                메일브릿지는 사용자가 선택한 이메일만 공유합니다. 개인 이메일은 절대 자동으로 공유되지 않으며,
-                공유 여부와 공개 범위를 직접 선택할 수 있습니다.
-                언제든지 연결을 해제할 수 있습니다.
-              </p>
-            </div>
-          </div>
+          )}
         </div>
       </section>
 
@@ -206,9 +261,12 @@ export default function Home() {
             지금 바로 시작하세요
           </h2>
           <p className="text-gray-400 mb-8">
-            유용한 이메일 정보를 다른 사람들과 함께 나눠보세요
+            Google 로그인 한 번이면 나만의 이메일 채널을 만들 수 있어요
           </p>
-          <Link href="/login" className="btn-primary text-lg px-10 py-4 inline-flex items-center gap-2">
+          <Link 
+            href="/create-channel" 
+            className="inline-flex items-center gap-2 px-10 py-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold rounded-xl transition-all"
+          >
             <Users className="w-5 h-5" />
             무료로 시작하기
           </Link>
@@ -219,13 +277,11 @@ export default function Home() {
       <footer className="py-12 px-4 border-t border-white/10">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex items-center space-x-2">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-secondary)] flex items-center justify-center">
-              <Mail className="w-4 h-4 text-white" />
-            </div>
-            <span className="font-bold gradient-text">메일브릿지</span>
+            <span className="text-2xl">📬</span>
+            <span className="font-bold text-white">MailChannel</span>
           </div>
           <p className="text-gray-500 text-sm">
-            © 2024 MailBridge. 이메일 정보 공유 플랫폼
+            © 2024 MailChannel. 이메일 채널 플랫폼
           </p>
         </div>
       </footer>
