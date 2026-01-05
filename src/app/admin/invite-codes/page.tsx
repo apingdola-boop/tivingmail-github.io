@@ -49,15 +49,18 @@ export default function InviteCodesPage() {
       });
 
       const data = await res.json();
+      console.log('생성 결과:', data);
 
       if (data.success) {
         setMessage(`✅ ${data.codes.length}개의 초대 코드가 생성되었습니다!`);
         fetchCodes(); // 목록 새로고침
       } else {
-        setMessage(`❌ ${data.error}`);
+        const errorDetail = data.details ? data.details.join(', ') : data.error;
+        setMessage(`❌ ${errorDetail || '알 수 없는 오류'}`);
       }
     } catch (error) {
-      setMessage('❌ 생성에 실패했습니다');
+      console.error('생성 오류:', error);
+      setMessage(`❌ 생성에 실패했습니다: ${error instanceof Error ? error.message : '네트워크 오류'}`);
     } finally {
       setIsGenerating(false);
     }
@@ -192,38 +195,42 @@ export default function InviteCodesPage() {
                 {codes.map((code) => (
                   <div 
                     key={code.id} 
-                    className={`p-4 flex items-center justify-between ${
-                      code.is_used ? 'opacity-50' : ''
+                    className={`p-4 ${
+                      code.is_used ? 'opacity-50 bg-gray-900/30' : 'hover:bg-white/5'
                     }`}
                   >
-                    <div className="flex items-center gap-4">
-                      <span className={`text-2xl font-mono font-bold ${
-                        code.is_used ? 'text-gray-500' : 'text-white'
-                      }`}>
-                        {code.code}
-                      </span>
-                      {code.is_used ? (
-                        <span className="px-2 py-1 bg-gray-500/20 text-gray-400 text-xs rounded-full">
-                          사용됨
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                      <div className="flex items-center gap-4">
+                        <code className={`text-lg sm:text-xl font-mono font-bold tracking-wider px-3 py-2 rounded-lg ${
+                          code.is_used 
+                            ? 'text-gray-500 bg-gray-800/50' 
+                            : 'text-emerald-400 bg-emerald-500/10 border border-emerald-500/30'
+                        }`}>
+                          {code.code}
+                        </code>
+                        {code.is_used ? (
+                          <span className="px-3 py-1 bg-gray-500/20 text-gray-400 text-xs rounded-full font-medium">
+                            ✓ 사용됨
+                          </span>
+                        ) : (
+                          <span className="px-3 py-1 bg-green-500/20 text-green-400 text-xs rounded-full font-medium animate-pulse">
+                            ● 활성
+                          </span>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <span className="text-gray-500 text-sm">
+                          {formatDate(code.created_at)}
                         </span>
-                      ) : (
-                        <span className="px-2 py-1 bg-green-500/20 text-green-400 text-xs rounded-full">
-                          사용 가능
-                        </span>
-                      )}
-                    </div>
-                    <div className="flex items-center gap-4">
-                      <span className="text-gray-500 text-sm">
-                        {formatDate(code.created_at)}
-                      </span>
-                      {!code.is_used && (
-                        <button
-                          onClick={() => copyCode(code.code)}
-                          className="px-3 py-1 bg-white/10 hover:bg-white/20 text-white text-sm rounded-lg"
-                        >
-                          복사
-                        </button>
-                      )}
+                        {!code.is_used && (
+                          <button
+                            onClick={() => copyCode(code.code)}
+                            className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm rounded-lg font-medium transition-colors"
+                          >
+                            📋 복사
+                          </button>
+                        )}
+                      </div>
                     </div>
                   </div>
                 ))}
