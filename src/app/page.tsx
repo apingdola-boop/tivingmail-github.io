@@ -51,6 +51,12 @@ export default function Home() {
           </Link>
           <div className="flex items-center gap-4">
             <Link 
+              href="/admin/invite-codes" 
+              className="text-gray-300 hover:text-white transition-colors"
+            >
+              🎟️ 초대 코드
+            </Link>
+            <Link 
               href="/login" 
               className="text-gray-300 hover:text-white transition-colors"
             >
