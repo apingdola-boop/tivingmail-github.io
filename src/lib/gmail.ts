@@ -48,13 +48,21 @@ const SEARCH_KEYWORDS = [
 export const searchTvingEmails = async (
   accessToken: string,
   refreshToken?: string,
-  maxResults: number = 50
+  maxResults: number = 50,
+  daysBack: number = 7  // 최근 N일 이내 이메일만 검색
 ) => {
   const gmail = getGmailClient(accessToken, refreshToken);
   
-  // 메일 제목에 키워드가 포함된 이메일만 검색
-  // Gmail 검색에서 subject: 연산자를 사용하면 제목만 검색
-  const query = SEARCH_KEYWORDS.map(keyword => `subject:"${keyword}"`).join(' OR ');
+  // 최근 N일 날짜 계산
+  const dateFilter = new Date();
+  dateFilter.setDate(dateFilter.getDate() - daysBack);
+  const afterDate = `${dateFilter.getFullYear()}/${String(dateFilter.getMonth() + 1).padStart(2, '0')}/${String(dateFilter.getDate()).padStart(2, '0')}`;
+  
+  // 메일 제목에 키워드가 포함된 이메일만 검색 + 최근 N일 필터
+  const keywordQuery = SEARCH_KEYWORDS.map(keyword => `subject:"${keyword}"`).join(' OR ');
+  const query = `(${keywordQuery}) after:${afterDate}`;
+  
+  console.log(`📧 Gmail 검색 쿼리: ${query}`);
   
   try {
     const response = await gmail.users.messages.list({
@@ -121,12 +129,21 @@ export const searchEmailsByKeywords = async (
   accessToken: string,
   keywords: string[],
   refreshToken?: string,
-  maxResults: number = 50
+  maxResults: number = 50,
+  daysBack: number = 7  // 최근 N일 이내 이메일만 검색
 ) => {
   const gmail = getGmailClient(accessToken, refreshToken);
   
-  // 채널의 키워드로 이메일 검색
-  const query = keywords.map(keyword => `subject:"${keyword}"`).join(' OR ');
+  // 최근 N일 날짜 계산
+  const dateFilter = new Date();
+  dateFilter.setDate(dateFilter.getDate() - daysBack);
+  const afterDate = `${dateFilter.getFullYear()}/${String(dateFilter.getMonth() + 1).padStart(2, '0')}/${String(dateFilter.getDate()).padStart(2, '0')}`;
+  
+  // 채널의 키워드로 이메일 검색 + 최근 N일 필터
+  const keywordQuery = keywords.map(keyword => `subject:"${keyword}"`).join(' OR ');
+  const query = `(${keywordQuery}) after:${afterDate}`;
+  
+  console.log(`📧 채널 Gmail 검색 쿼리: ${query}`);
   
   try {
     const response = await gmail.users.messages.list({
