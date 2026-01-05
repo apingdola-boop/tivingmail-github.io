@@ -60,6 +60,26 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // 🔒 사용자당 채널 개수 제한 (최대 2개)
+    const MAX_CHANNELS_PER_USER = 2;
+    const { data: userChannels, error: countError } = await supabase
+      .from('channels')
+      .select('id')
+      .eq('owner_id', userId)
+      .eq('is_active', true);
+
+    if (countError) {
+      console.error('채널 수 확인 오류:', countError);
+    }
+
+    const currentChannelCount = userChannels?.length || 0;
+    if (currentChannelCount >= MAX_CHANNELS_PER_USER) {
+      return NextResponse.json(
+        { error: `채널은 계정당 최대 ${MAX_CHANNELS_PER_USER}개까지만 만들 수 있습니다` },
+        { status: 400 }
+      );
+    }
+
     // slug 중복 확인
     const { data: existingChannel } = await supabase
       .from('channels')
