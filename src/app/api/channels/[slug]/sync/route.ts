@@ -70,27 +70,28 @@ export async function POST(
       accessToken,
       keywords,
       refreshToken || undefined,
-      50
+      20  // 최신 20개만
     );
 
     console.log(`📧 ${emails.length}개의 이메일 발견`);
 
-    // 기존 이메일 조회 (제목 + 날짜로 중복 방지)
+    // 기존 Gmail 메시지 ID 조회 (정확한 중복 체크)
     const { data: existingDeals } = await supabase
       .from('deals')
-      .select('original_email_subject, original_email_date')
-      .eq('channel_id', channel.id);
+      .select('gmail_message_id')
+      .eq('channel_id', channel.id)
+      .not('gmail_message_id', 'is', null);
 
-    const existingKeys = new Set(
-      existingDeals?.map(d => `${d.original_email_subject}|${d.original_email_date}`) || []
+    const existingIds = new Set(
+      existingDeals?.map(d => d.gmail_message_id) || []
     );
 
-    // 새 이메일만 필터링
+    // Gmail 메시지 ID로 새 이메일만 필터링
     const newEmails = emails.filter(
-      email => !existingKeys.has(`${email.subject}|${email.date}`)
+      email => email.id && !existingIds.has(email.id)
     );
 
-    console.log(`🆕 ${newEmails.length}개의 새로운 이메일 저장 예정`);
+    console.log(`🆕 ${newEmails.length}개의 새로운 이메일 저장 예정 (기존 ${existingIds.size}개)`);
 
     // 새 이메일들을 deals 테이블에 저장
     let savedCount = 0;
@@ -100,6 +101,7 @@ export async function POST(
         .insert({
           user_id: userId,
           channel_id: channel.id,
+          gmail_message_id: email.id,  // Gmail 메시지 ID 저장
           title: email.subject,
           description: email.snippet,
           original_email_subject: email.subject,

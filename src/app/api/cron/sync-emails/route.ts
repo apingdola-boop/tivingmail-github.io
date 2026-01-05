@@ -56,23 +56,23 @@ export async function GET(request: NextRequest) {
         console.log(`📧 ${user.email}: ${emails.length}개 이메일 발견`);
 
         if (emails.length > 0) {
-          // 기존에 저장된 이메일 조회 (제목 + 날짜로 중복 체크)
+          // 기존에 저장된 Gmail 메시지 ID 조회 (정확한 중복 체크)
           const { data: existingDeals } = await supabase
             .from('deals')
-            .select('original_email_subject, original_email_date')
-            .eq('user_id', user.id);
+            .select('gmail_message_id')
+            .eq('user_id', user.id)
+            .not('gmail_message_id', 'is', null);
 
-          // 제목+날짜 조합으로 중복 체크 (같은 제목이라도 다른 날짜면 허용)
-          const existingKeys = new Set(
-            existingDeals?.map(d => `${d.original_email_subject}|${d.original_email_date}`) || []
+          const existingIds = new Set(
+            existingDeals?.map(d => d.gmail_message_id) || []
           );
 
-          // 새 이메일만 필터링 (제목+날짜 조합으로 체크)
+          // Gmail 메시지 ID로 새 이메일만 필터링
           const newEmails = emails.filter(
-            email => !existingKeys.has(`${email.subject}|${email.date}`)
+            email => email.id && !existingIds.has(email.id)
           );
 
-          console.log(`🆕 ${user.email}: ${newEmails.length}개 새 이메일`);
+          console.log(`🆕 ${user.email}: ${newEmails.length}개 새 이메일 (기존 ${existingIds.size}개)`);
 
           // 새 이메일들을 deals 테이블에 저장
           for (const email of newEmails) {
@@ -80,6 +80,7 @@ export async function GET(request: NextRequest) {
               .from('deals')
               .insert({
                 user_id: user.id,
+                gmail_message_id: email.id,  // Gmail 메시지 ID 저장
                 title: email.subject,
                 description: email.snippet,
                 original_email_subject: email.subject,
