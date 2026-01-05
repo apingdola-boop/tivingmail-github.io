@@ -38,33 +38,77 @@ export default function ChannelPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
   const [selectedEmail, setSelectedEmail] = useState<Email | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [syncMessage, setSyncMessage] = useState('');
 
+  // 관리자 확인
   useEffect(() => {
-    const fetchChannelData = async () => {
+    const checkAdmin = async () => {
       try {
-        setIsLoading(true);
-        
-        // 채널 정보 가져오기
-        const channelRes = await fetch(`/api/channels/${slug}`);
-        const channelData = await channelRes.json();
-        
-        if (!channelRes.ok) {
-          throw new Error(channelData.error || '채널을 찾을 수 없습니다');
-        }
-        
-        setChannel(channelData.channel);
-        setEmails(channelData.emails || []);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : '오류가 발생했습니다');
-      } finally {
-        setIsLoading(false);
+        const res = await fetch('/api/admin/check');
+        const data = await res.json();
+        setIsAdmin(data.isAdmin);
+      } catch {
+        setIsAdmin(false);
       }
     };
+    checkAdmin();
+  }, []);
 
+  // 채널 데이터 가져오기
+  const fetchChannelData = async () => {
+    try {
+      setIsLoading(true);
+      
+      const channelRes = await fetch(`/api/channels/${slug}`);
+      const channelData = await channelRes.json();
+      
+      if (!channelRes.ok) {
+        throw new Error(channelData.error || '채널을 찾을 수 없습니다');
+      }
+      
+      setChannel(channelData.channel);
+      setEmails(channelData.emails || []);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : '오류가 발생했습니다');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
     if (slug) {
       fetchChannelData();
     }
   }, [slug]);
+
+  // 동기화 함수
+  const handleSync = async () => {
+    setIsSyncing(true);
+    setSyncMessage('');
+
+    try {
+      const res = await fetch(`/api/channels/${slug}/sync`, {
+        method: 'POST',
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error);
+      }
+
+      setSyncMessage(`✅ ${data.message}`);
+      // 동기화 후 데이터 새로고침
+      fetchChannelData();
+    } catch (err) {
+      setSyncMessage(`❌ ${err instanceof Error ? err.message : '동기화 실패'}`);
+    } finally {
+      setIsSyncing(false);
+      // 3초 후 메시지 숨김
+      setTimeout(() => setSyncMessage(''), 5000);
+    }
+  };
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -202,19 +246,60 @@ export default function ChannelPage() {
 
       {/* Emails List */}
       <main className="max-w-6xl mx-auto px-4 py-8">
+        {/* 동기화 메시지 */}
+        {syncMessage && (
+          <div className={`mb-4 p-4 rounded-lg ${
+            syncMessage.startsWith('✅') 
+              ? 'bg-green-500/20 border border-green-500/50 text-green-300'
+              : 'bg-red-500/20 border border-red-500/50 text-red-300'
+          }`}>
+            {syncMessage}
+          </div>
+        )}
+
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-semibold text-white">
             📧 공유된 이메일 ({emails.length}개)
           </h2>
+          
+          {/* 관리자용 동기화 버튼 */}
+          {isAdmin && (
+            <button
+              onClick={handleSync}
+              disabled={isSyncing}
+              className="px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              style={{ 
+                boxShadow: `0 4px 20px ${channel.color}40`
+              }}
+            >
+              {isSyncing ? (
+                <>
+                  <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-white"></div>
+                  동기화 중...
+                </>
+              ) : (
+                <>🔄 이메일 동기화</>
+              )}
+            </button>
+          )}
         </div>
 
         {emails.length === 0 ? (
           <div className="text-center py-16">
             <div className="text-6xl mb-4">📭</div>
             <h3 className="text-xl font-semibold text-white mb-2">아직 공유된 이메일이 없습니다</h3>
-            <p className="text-gray-400">
+            <p className="text-gray-400 mb-6">
               채널 운영자가 Google 로그인하면 키워드가 포함된 이메일이 자동으로 공유됩니다
             </p>
+            {isAdmin && (
+              <button
+                onClick={handleSync}
+                disabled={isSyncing}
+                className="px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold rounded-xl transition-all disabled:opacity-50"
+              >
+                {isSyncing ? '동기화 중...' : '🔄 지금 동기화하기'}
+              </button>
+            )}
           </div>
         ) : (
           <div className="grid gap-4">
