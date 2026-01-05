@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import AdminGuard from '@/components/AdminGuard';
 
 const ICON_OPTIONS = ['📬', '📧', '📰', '🎬', '🛒', '💰', '🎮', '📱', '🎵', '📚', '✈️', '🍔', '⚽', '💼', '🎨'];
 const COLOR_OPTIONS = ['#3B82F6', '#EF4444', '#10B981', '#F59E0B', '#8B5CF6', '#EC4899', '#06B6D4', '#84CC16'];
@@ -63,6 +64,7 @@ export default function CreateChannelPage() {
   };
 
   return (
+    <AdminGuard>
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
       {/* Header */}
       <header className="border-b border-white/10 backdrop-blur-sm">
@@ -242,6 +244,7 @@ export default function CreateChannelPage() {
         </div>
       </main>
     </div>
+    </AdminGuard>
   );
 }
 

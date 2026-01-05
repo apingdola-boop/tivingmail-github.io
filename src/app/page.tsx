@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Mail, Zap, Share2, ArrowRight, Sparkles, Users, Plus } from 'lucide-react';
+import AdminGuard from '@/components/AdminGuard';
 
 interface Channel {
   id: string;
@@ -40,6 +41,7 @@ export default function Home() {
   }, []);
 
   return (
+    <AdminGuard>
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
       {/* Header */}
       <header className="border-b border-white/10 backdrop-blur-sm sticky top-0 z-50">
@@ -286,5 +288,6 @@ export default function Home() {
         </div>
       </footer>
     </div>
+    </AdminGuard>
   );
 }
