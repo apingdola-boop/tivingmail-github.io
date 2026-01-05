@@ -49,7 +49,7 @@ export const searchTvingEmails = async (
   accessToken: string,
   refreshToken?: string,
   maxResults: number = 50,
-  daysBack: number = 7  // 최근 N일 이내 이메일만 검색
+  daysBack: number = 3  // 최근 N일 이내 이메일만 검색
 ) => {
   const gmail = getGmailClient(accessToken, refreshToken);
   
@@ -130,7 +130,7 @@ export const searchEmailsByKeywords = async (
   keywords: string[],
   refreshToken?: string,
   maxResults: number = 50,
-  daysBack: number = 7  // 최근 N일 이내 이메일만 검색
+  daysBack: number = 3  // 최근 N일 이내 이메일만 검색
 ) => {
   const gmail = getGmailClient(accessToken, refreshToken);
   
