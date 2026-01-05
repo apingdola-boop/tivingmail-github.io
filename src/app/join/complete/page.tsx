@@ -46,6 +46,15 @@ export default function JoinCompletePage() {
           throw new Error(data.error || '채널 생성에 실패했습니다');
         }
 
+        // 초대 코드 사용 처리
+        if (channelData.inviteCode) {
+          await fetch('/api/invite/use', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ code: channelData.inviteCode }),
+          });
+        }
+
         // 세션 정리
         sessionStorage.removeItem('pending_channel');
 
