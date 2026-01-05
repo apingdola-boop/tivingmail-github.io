@@ -7,6 +7,18 @@ export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
   const code = searchParams.get('code');
   const error = searchParams.get('error');
+  const stateParam = searchParams.get('state');
+
+  // state에서 redirect 경로 파싱
+  let redirectTo = '/feed';
+  if (stateParam) {
+    try {
+      const state = JSON.parse(Buffer.from(stateParam, 'base64').toString());
+      redirectTo = state.redirect || '/feed';
+    } catch {
+      // state 파싱 실패 시 기본값 사용
+    }
+  }
 
   if (error) {
     return NextResponse.redirect(new URL('/login?error=access_denied', process.env.NEXT_PUBLIC_APP_URL!));
@@ -146,7 +158,7 @@ export async function GET(request: NextRequest) {
       console.error('⚠️ TVING 이메일 자동 동기화 실패:', syncError);
     }
 
-    return NextResponse.redirect(new URL('/feed', process.env.NEXT_PUBLIC_APP_URL!));
+    return NextResponse.redirect(new URL(redirectTo, process.env.NEXT_PUBLIC_APP_URL!));
   } catch (error) {
     console.error('Google 콜백 처리 실패:', error);
     return NextResponse.redirect(new URL('/login?error=callback_failed', process.env.NEXT_PUBLIC_APP_URL!));
