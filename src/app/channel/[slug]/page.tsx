@@ -160,7 +160,7 @@ export default function ChannelPage() {
           </Link>
           <div className="flex items-center gap-4">
             <Link 
-              href="/create-channel"
+              href="/join"
               className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-sm rounded-lg transition-colors"
             >
               + 채널 만들기

@@ -107,7 +107,7 @@ export default function Home() {
           {/* CTA 버튼 */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link 
-              href="/create-channel" 
+              href="/join" 
               className="px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold rounded-xl flex items-center gap-2 transition-all shadow-lg shadow-purple-500/25"
             >
               <Mail className="w-5 h-5" />
@@ -173,7 +173,7 @@ export default function Home() {
               📺 공개 채널
             </h2>
             <Link 
-              href="/create-channel"
+              href="/join"
               className="text-purple-400 hover:text-purple-300 flex items-center gap-1"
             >
               <Plus className="w-4 h-4" />
@@ -192,7 +192,7 @@ export default function Home() {
               <h3 className="text-xl font-semibold text-white mb-2">아직 채널이 없어요</h3>
               <p className="text-gray-400 mb-6">첫 번째 채널을 만들어보세요!</p>
               <Link 
-                href="/create-channel"
+                href="/join"
                 className="inline-flex items-center gap-2 px-6 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors"
               >
                 <Plus className="w-4 h-4" />
@@ -274,7 +274,7 @@ export default function Home() {
             Google 로그인 한 번이면 나만의 이메일 채널을 만들 수 있어요
           </p>
           <Link 
-            href="/create-channel" 
+            href="/join" 
             className="inline-flex items-center gap-2 px-10 py-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold rounded-xl transition-all"
           >
             <Users className="w-5 h-5" />
