@@ -2,8 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { Mail, Zap, Share2, ArrowRight, Sparkles, Users, Plus } from 'lucide-react';
-import AdminGuard from '@/components/AdminGuard';
+import { Mail, Zap, Share2, ArrowRight, Sparkles, Users, Plus, Shield } from 'lucide-react';
 
 interface Channel {
   id: string;
@@ -41,38 +40,41 @@ export default function Home() {
   }, []);
 
   return (
-    <AdminGuard>
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
       {/* Header */}
       <header className="border-b border-white/10 backdrop-blur-sm sticky top-0 z-50">
         <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
           <Link href="/" className="text-2xl font-bold text-white flex items-center gap-2">
-            📬 MailChannel
+            <img src="/logo.svg" alt="MailBridge" className="w-8 h-8" />
+            MailBridge
           </Link>
           <div className="flex items-center gap-4">
             <Link 
-              href="/admin/invite-codes" 
+              href="/join" 
               className="text-gray-300 hover:text-white transition-colors"
             >
-              🎟️ 초대 코드
-            </Link>
-            <Link 
-              href="/login" 
-              className="text-gray-300 hover:text-white transition-colors"
-            >
-              로그인
-            </Link>
-            <Link 
-              href="/create-channel"
-              className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors flex items-center gap-2"
-            >
-              <Plus className="w-4 h-4" />
               채널 만들기
+            </Link>
+            <Link 
+              href="/privacy" 
+              className="text-gray-300 hover:text-white transition-colors"
+            >
+              개인정보처리방침
             </Link>
           </div>
         </div>
       </header>
       
+      {/* 앱 소개 배너 */}
+      <section className="bg-gradient-to-r from-purple-600/20 to-pink-600/20 border-b border-white/10 py-4 px-4">
+        <div className="max-w-4xl mx-auto text-center">
+          <p className="text-gray-300">
+            <strong className="text-white">MailBridge</strong>는 Gmail 이메일을 쉽게 공유할 수 있는 플랫폼입니다. 
+            특정 키워드가 포함된 이메일을 자동으로 공유 채널에 게시할 수 있습니다.
+          </p>
+        </div>
+      </section>
+
       {/* 히어로 섹션 */}
       <section className="pt-20 pb-16 px-4 relative overflow-hidden">
         {/* 배경 효과 */}
@@ -85,21 +87,21 @@ export default function Home() {
           {/* 뱃지 */}
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 border border-white/20 mb-8">
             <Sparkles className="w-4 h-4 text-yellow-400" />
-            <span className="text-sm text-gray-300">누구나 쉽게 이메일 채널을 만들 수 있어요</span>
+            <span className="text-sm text-gray-300">Gmail 이메일 자동 공유 플랫폼</span>
           </div>
 
           {/* 메인 타이틀 */}
           <h1 className="text-4xl md:text-6xl font-bold text-white mb-6">
-            나만의 <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">이메일 채널</span>을
+            <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">MailBridge</span>
             <br />
-            만들어보세요
+            이메일 공유 플랫폼
           </h1>
 
           {/* 서브 타이틀 */}
           <p className="text-xl text-gray-400 mb-10 max-w-2xl mx-auto">
-            Google 로그인 한 번으로 특정 이메일을 자동으로 공유하는 채널을 만들 수 있어요.
+            Gmail에서 특정 키워드가 포함된 이메일을 자동으로 공유 채널에 게시합니다.
             <br />
-            채널 링크만 공유하면 누구나 볼 수 있습니다!
+            채널 링크만 공유하면 누구나 로그인 없이 이메일 내용을 볼 수 있어요!
           </p>
 
           {/* CTA 버튼 */}
@@ -281,19 +283,50 @@ export default function Home() {
         </div>
       </section>
 
+      {/* 기능 소개 */}
+      <section className="py-16 px-4 bg-white/5">
+        <div className="max-w-4xl mx-auto">
+          <h2 className="text-2xl font-bold text-white text-center mb-8">
+            <Shield className="w-6 h-6 inline mr-2" />
+            MailBridge의 주요 기능
+          </h2>
+          <div className="grid md:grid-cols-2 gap-6 text-gray-300">
+            <div className="bg-white/5 p-6 rounded-xl">
+              <h3 className="text-white font-semibold mb-2">📧 Gmail 연동</h3>
+              <p>Google OAuth를 통해 안전하게 Gmail에 연결하고, 원하는 이메일만 선택적으로 공유합니다.</p>
+            </div>
+            <div className="bg-white/5 p-6 rounded-xl">
+              <h3 className="text-white font-semibold mb-2">🔍 키워드 필터링</h3>
+              <p>특정 키워드가 포함된 이메일만 자동으로 채널에 공유됩니다.</p>
+            </div>
+            <div className="bg-white/5 p-6 rounded-xl">
+              <h3 className="text-white font-semibold mb-2">🔗 쉬운 공유</h3>
+              <p>채널 링크만 공유하면 누구나 로그인 없이 이메일 내용을 확인할 수 있습니다.</p>
+            </div>
+            <div className="bg-white/5 p-6 rounded-xl">
+              <h3 className="text-white font-semibold mb-2">🔒 개인정보 보호</h3>
+              <p>사용자가 지정한 키워드가 포함된 이메일만 공유되며, 다른 이메일은 접근하지 않습니다.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* 푸터 */}
       <footer className="py-12 px-4 border-t border-white/10">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex items-center space-x-2">
-            <span className="text-2xl">📬</span>
-            <span className="font-bold text-white">MailChannel</span>
+            <img src="/logo.svg" alt="MailBridge" className="w-8 h-8" />
+            <span className="font-bold text-white">MailBridge</span>
+          </div>
+          <div className="flex gap-6 text-sm">
+            <Link href="/privacy" className="text-gray-400 hover:text-white">개인정보처리방침</Link>
+            <Link href="/terms" className="text-gray-400 hover:text-white">이용약관</Link>
           </div>
           <p className="text-gray-500 text-sm">
-            © 2024 MailChannel. 이메일 채널 플랫폼
+            © 2024 MailBridge. Gmail 이메일 공유 플랫폼
           </p>
         </div>
       </footer>
     </div>
-    </AdminGuard>
   );
 }
