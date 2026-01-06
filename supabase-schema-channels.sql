@@ -96,3 +96,4 @@ CREATE TRIGGER set_channels_updated_at
 -- 나중에 필요시 실행:
 -- UPDATE public.deals SET channel_id = '기존채널UUID' WHERE channel_id IS NULL;
 
+
