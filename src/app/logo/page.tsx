@@ -22,13 +22,22 @@ export default function LogoPage() {
           </p>
           
           {/* 다운로드 버튼 */}
-          <a 
-            href="/logo.svg" 
-            download="mailbridge-logo.svg"
-            className="inline-block px-8 py-4 bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-xl transition-colors"
-          >
-            📥 SVG 다운로드
-          </a>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <a 
+              href="/logo.png" 
+              download="mailbridge-logo.png"
+              className="inline-block px-8 py-4 bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-xl transition-colors"
+            >
+              📥 PNG 다운로드 (추천)
+            </a>
+            <a 
+              href="/logo.svg" 
+              download="mailbridge-logo.svg"
+              className="inline-block px-8 py-4 bg-gray-600 hover:bg-gray-700 text-white font-semibold rounded-xl transition-colors"
+            >
+              📥 SVG 다운로드
+            </a>
+          </div>
         </div>
 
         {/* 사용 안내 */}
