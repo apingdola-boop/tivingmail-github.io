@@ -311,22 +311,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 푸터 */}
-      <footer className="py-12 px-4 border-t border-white/10">
-        <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
-          <div className="flex items-center space-x-2">
-            <img src="/logo.svg" alt="MailBridge" className="w-8 h-8" />
-            <span className="font-bold text-white">MailBridge</span>
-          </div>
-          <div className="flex gap-6 text-sm">
-            <Link href="/privacy" className="text-gray-400 hover:text-white">개인정보처리방침</Link>
-            <Link href="/terms" className="text-gray-400 hover:text-white">이용약관</Link>
-          </div>
-          <p className="text-gray-500 text-sm">
-            © 2024 MailBridge. Gmail 이메일 공유 플랫폼
-          </p>
-        </div>
-      </footer>
     </div>
   );
 }
