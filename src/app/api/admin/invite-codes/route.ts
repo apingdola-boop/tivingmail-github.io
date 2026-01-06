@@ -3,22 +3,22 @@ import { supabase } from '@/lib/supabase';
 import { cookies } from 'next/headers';
 import crypto from 'crypto';
 
-// 매우 복잡한 초대 코드 생성 (형식: XXXXX-XXXXX-XXXXX-XXXXX, 20자리)
+// 초대 코드 생성 (형식: XXXXX-XXXXX, 10자리)
 function generateSecureCode(): string {
   // crypto 모듈로 암호학적으로 안전한 랜덤 생성
-  const randomBytes = crypto.randomBytes(20);
+  const randomBytes = crypto.randomBytes(10);
   
   // 대소문자 + 숫자 (혼동되는 문자 제외: 0, O, I, 1, l)
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789';
   let code = '';
   
-  for (let i = 0; i < 20; i++) {
+  for (let i = 0; i < 10; i++) {
     const byte = randomBytes[i];
     const index = byte % chars.length;
     code += chars[index];
     
-    // 5자리마다 하이픈 추가 (마지막 제외)
-    if ((i + 1) % 5 === 0 && i < 19) {
+    // 5자리마다 하이픈 추가 (중간에만)
+    if (i === 4) {
       code += '-';
     }
   }
@@ -26,22 +26,22 @@ function generateSecureCode(): string {
   return code;
 }
 
-// 대체 코드 생성 (더 랜덤하고 긴 방식)
+// 대체 코드 생성 (10자리)
 function generateCode(): string {
-  const segments = [];
-  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789!@#$%';
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789';
+  let code = '';
   
-  for (let s = 0; s < 4; s++) {
-    let segment = '';
-    for (let i = 0; i < 5; i++) {
-      // 더 랜덤한 인덱스 선택 (여러 엔트로피 소스 결합)
-      const randomValue = (Math.random() * 1000000 + Date.now() + Math.random() * 999999) % chars.length;
-      segment += chars.charAt(Math.floor(randomValue));
+  for (let i = 0; i < 10; i++) {
+    const randomValue = (Math.random() * 1000000 + Date.now() + Math.random() * 999999) % chars.length;
+    code += chars.charAt(Math.floor(randomValue));
+    
+    // 5자리마다 하이픈 추가 (중간에만)
+    if (i === 4) {
+      code += '-';
     }
-    segments.push(segment);
   }
   
-  return segments.join('-');
+  return code;
 }
 
 // 초대 코드 목록 조회 (관리자용)
