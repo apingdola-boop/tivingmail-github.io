@@ -31,7 +31,7 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { name, slug, description, keywords, icon, color } = body;
+    const { name, slug, description, keywords, icon, color, isPrivate, password } = body;
 
     // 필수 필드 검증
     if (!name || !slug || !keywords || keywords.length === 0) {
@@ -106,6 +106,8 @@ export async function POST(request: NextRequest) {
         color: color || '#3B82F6',
         owner_id: userId,
         is_active: true,
+        is_private: isPrivate || false,
+        password: isPrivate && password ? password : null,
       } as Record<string, unknown>)
       .select()
       .single();

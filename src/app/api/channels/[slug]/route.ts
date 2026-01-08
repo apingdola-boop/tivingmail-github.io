@@ -8,6 +8,8 @@ export async function GET(
 ) {
   try {
     const { slug } = await params;
+    const { searchParams } = new URL(request.url);
+    const inputPassword = searchParams.get('password');
 
     // 채널 정보 조회
     const { data: channel, error: channelError } = await supabase
@@ -27,6 +29,33 @@ export async function GET(
       );
     }
 
+    // 비공개 채널인 경우 비밀번호 확인
+    if (channel.is_private && channel.password) {
+      if (!inputPassword) {
+        // 비밀번호 필요 알림 (채널 기본 정보만 반환)
+        return NextResponse.json({
+          channel: {
+            id: channel.id,
+            name: channel.name,
+            slug: channel.slug,
+            icon: channel.icon,
+            color: channel.color,
+            is_private: true,
+            description: channel.description,
+          },
+          requiresPassword: true,
+          emails: [],
+        });
+      }
+      
+      if (inputPassword !== channel.password) {
+        return NextResponse.json(
+          { error: '비밀번호가 올바르지 않습니다', requiresPassword: true },
+          { status: 401 }
+        );
+      }
+    }
+
     // 해당 채널의 이메일 조회
     const { data: emails, error: emailsError } = await supabase
       .from('deals')
@@ -39,8 +68,11 @@ export async function GET(
       console.error('이메일 조회 오류:', emailsError);
     }
 
+    // 비밀번호는 클라이언트에 반환하지 않음
+    const { password, ...channelWithoutPassword } = channel;
+
     return NextResponse.json({
-      channel,
+      channel: channelWithoutPassword,
       emails: emails || [],
     });
   } catch (error) {
@@ -124,5 +156,9 @@ export async function DELETE(
     );
   }
 }
+
+
+
+
 
 

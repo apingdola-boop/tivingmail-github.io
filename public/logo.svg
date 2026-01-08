@@ -2,19 +2,35 @@
   <!-- 배경 원 -->
   <circle cx="256" cy="256" r="256" fill="url(#gradient)"/>
   
-  <!-- 편지 봉투 모양 -->
-  <rect x="96" y="160" width="320" height="220" rx="20" fill="white" opacity="0.95"/>
+  <!-- 물결 1 (뒤쪽, 연한) -->
+  <path d="M60 320 Q130 280 200 320 Q270 360 340 320 Q410 280 480 320 L480 450 Q410 410 340 450 Q270 490 200 450 Q130 410 60 450 Z" fill="white" opacity="0.2"/>
   
-  <!-- 편지 봉투 덮개 (삼각형) -->
-  <path d="M96 180 L256 300 L416 180" stroke="url(#gradient2)" stroke-width="8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- 물결 2 (중간) -->
+  <path d="M40 350 Q110 310 180 350 Q250 390 320 350 Q390 310 460 350 L460 480 Q390 440 320 480 Q250 520 180 480 Q110 440 40 480 Z" fill="white" opacity="0.35"/>
   
-  <!-- 다리 (Bridge) 심볼 -->
-  <path d="M140 320 Q200 280 256 320 Q312 360 372 320" stroke="url(#gradient2)" stroke-width="12" fill="none" stroke-linecap="round"/>
+  <!-- 물결 3 (앞쪽, 진한) -->
+  <path d="M20 380 Q90 340 160 380 Q230 420 300 380 Q370 340 440 380 L500 380 L500 512 L20 512 Z" fill="white" opacity="0.5"/>
   
-  <!-- 아래쪽 다리 지지대 -->
-  <line x1="180" y1="320" x2="180" y2="350" stroke="url(#gradient2)" stroke-width="8" stroke-linecap="round"/>
-  <line x1="256" y1="320" x2="256" y2="350" stroke="url(#gradient2)" stroke-width="8" stroke-linecap="round"/>
-  <line x1="332" y1="320" x2="332" y2="350" stroke="url(#gradient2)" stroke-width="8" stroke-linecap="round"/>
+  <!-- 편지봉투 그림자 (떠있는 느낌) -->
+  <ellipse cx="256" cy="310" rx="90" ry="20" fill="black" opacity="0.15"/>
+  
+  <!-- 편지봉투 본체 -->
+  <g transform="translate(256, 200) rotate(-5)">
+    <!-- 봉투 바디 -->
+    <rect x="-100" y="-60" width="200" height="130" rx="12" fill="white"/>
+    
+    <!-- 봉투 덮개 (삼각형) -->
+    <path d="M-100 -48 L0 35 L100 -48" stroke="url(#gradient2)" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    
+    <!-- 봉투 윗부분 접힌 느낌 -->
+    <path d="M-100 -60 L0 20 L100 -60" fill="#f3e8ff" stroke="none"/>
+    <path d="M-100 -60 L0 20 L100 -60" stroke="url(#gradient2)" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  
+  <!-- 작은 물방울/빛 효과 (떠다니는 느낌 강화) -->
+  <circle cx="170" cy="160" r="8" fill="white" opacity="0.6"/>
+  <circle cx="350" cy="140" r="5" fill="white" opacity="0.5"/>
+  <circle cx="320" cy="180" r="4" fill="white" opacity="0.4"/>
   
   <!-- 그라데이션 정의 -->
   <defs>
@@ -28,4 +44,3 @@
     </linearGradient>
   </defs>
 </svg>
-

@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
+import { Lock, Eye, EyeOff } from 'lucide-react';
 
 interface Channel {
   id: string;
@@ -12,6 +13,7 @@ interface Channel {
   keywords: string[];
   icon: string;
   color: string;
+  is_private?: boolean;
   owner: {
     name: string;
     avatar_url: string;
@@ -41,6 +43,12 @@ export default function ChannelPage() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [isSyncing, setIsSyncing] = useState(false);
   const [syncMessage, setSyncMessage] = useState('');
+  
+  // 비밀번호 관련 상태
+  const [requiresPassword, setRequiresPassword] = useState(false);
+  const [passwordInput, setPasswordInput] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [passwordError, setPasswordError] = useState('');
 
   // 관리자 확인
   useEffect(() => {
@@ -57,17 +65,36 @@ export default function ChannelPage() {
   }, []);
 
   // 채널 데이터 가져오기
-  const fetchChannelData = async () => {
+  const fetchChannelData = async (password?: string) => {
     try {
       setIsLoading(true);
+      setPasswordError('');
       
-      const channelRes = await fetch(`/api/channels/${slug}`);
+      const url = password 
+        ? `/api/channels/${slug}?password=${encodeURIComponent(password)}`
+        : `/api/channels/${slug}`;
+      
+      const channelRes = await fetch(url);
       const channelData = await channelRes.json();
       
+      if (channelData.requiresPassword && !password) {
+        // 비밀번호 필요
+        setRequiresPassword(true);
+        setChannel(channelData.channel);
+        setIsLoading(false);
+        return;
+      }
+      
       if (!channelRes.ok) {
+        if (channelData.requiresPassword) {
+          setPasswordError('비밀번호가 올바르지 않습니다');
+          setIsLoading(false);
+          return;
+        }
         throw new Error(channelData.error || '채널을 찾을 수 없습니다');
       }
       
+      setRequiresPassword(false);
       setChannel(channelData.channel);
       setEmails(channelData.emails || []);
     } catch (err) {
@@ -77,11 +104,33 @@ export default function ChannelPage() {
     }
   };
 
+  // 비밀번호 제출
+  const handlePasswordSubmit = () => {
+    if (!passwordInput.trim()) {
+      setPasswordError('비밀번호를 입력하세요');
+      return;
+    }
+    fetchChannelData(passwordInput);
+  };
+
   useEffect(() => {
     if (slug) {
-      fetchChannelData();
+      // 세션에서 저장된 비밀번호 확인
+      const savedPassword = sessionStorage.getItem(`channel_password_${slug}`);
+      if (savedPassword) {
+        fetchChannelData(savedPassword);
+      } else {
+        fetchChannelData();
+      }
     }
   }, [slug]);
+
+  // 비밀번호 인증 성공 시 세션에 저장
+  useEffect(() => {
+    if (!requiresPassword && channel?.is_private && passwordInput) {
+      sessionStorage.setItem(`channel_password_${slug}`, passwordInput);
+    }
+  }, [requiresPassword, channel, passwordInput, slug]);
 
   // 동기화 함수
   const handleSync = async () => {
@@ -150,6 +199,73 @@ export default function ChannelPage() {
     );
   }
 
+  // 비밀번호 입력 화면
+  if (requiresPassword) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center p-4">
+        <div className="bg-white/10 backdrop-blur-md rounded-2xl p-8 border border-white/20 max-w-md w-full text-center">
+          <div 
+            className="w-20 h-20 mx-auto mb-6 rounded-full flex items-center justify-center text-4xl"
+            style={{ backgroundColor: `${channel.color}30` }}
+          >
+            {channel.icon}
+          </div>
+          
+          <h1 className="text-2xl font-bold text-white mb-2">{channel.name}</h1>
+          <div className="flex items-center justify-center gap-2 mb-6">
+            <Lock className="w-4 h-4 text-purple-400" />
+            <span className="text-purple-400 text-sm">비공개 채널</span>
+          </div>
+          
+          <p className="text-gray-400 mb-6">
+            이 채널은 비밀번호로 보호되어 있습니다
+          </p>
+
+          {passwordError && (
+            <div className="bg-red-500/20 border border-red-500/50 rounded-lg p-3 mb-4">
+              <p className="text-red-300 text-sm">{passwordError}</p>
+            </div>
+          )}
+
+          <div className="relative mb-4">
+            <input
+              type={showPassword ? 'text' : 'password'}
+              value={passwordInput}
+              onChange={(e) => setPasswordInput(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handlePasswordSubmit()}
+              placeholder="비밀번호 입력"
+              className="w-full px-4 py-3 pr-12 bg-white/10 border border-white/20 rounded-lg text-white text-center placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white"
+            >
+              {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+            </button>
+          </div>
+
+          <button
+            onClick={handlePasswordSubmit}
+            className="w-full py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold rounded-xl transition-all"
+            style={{ 
+              boxShadow: `0 4px 20px ${channel.color}40`
+            }}
+          >
+            입장하기
+          </button>
+
+          <Link 
+            href="/"
+            className="block mt-4 text-gray-500 hover:text-gray-300 text-sm"
+          >
+            ← 홈으로 돌아가기
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
       {/* Header */}
@@ -183,7 +299,15 @@ export default function ChannelPage() {
               {channel.icon}
             </span>
             <div>
-              <h1 className="text-3xl font-bold text-white">{channel.name}</h1>
+              <div className="flex items-center gap-2">
+                <h1 className="text-3xl font-bold text-white">{channel.name}</h1>
+                {channel.is_private && (
+                  <span className="px-2 py-1 bg-purple-500/30 text-purple-300 text-xs rounded-full flex items-center gap-1">
+                    <Lock className="w-3 h-3" />
+                    비공개
+                  </span>
+                )}
+              </div>
               <p className="text-gray-400">/channel/{channel.slug}</p>
             </div>
           </div>

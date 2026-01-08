@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { Mail, Zap, Share2, ArrowRight, Sparkles, Users, Plus, Shield } from 'lucide-react';
+import { Mail, Zap, Share2, ArrowRight, Sparkles, Users, Plus, Shield, Lock } from 'lucide-react';
 
 interface Channel {
   id: string;
@@ -12,6 +12,7 @@ interface Channel {
   keywords: string[];
   icon: string;
   color: string;
+  is_private?: boolean;
   owner: {
     name: string;
     avatar_url: string;
@@ -209,9 +210,14 @@ export default function Home() {
                       {channel.icon}
                     </span>
                     <div>
-                      <h3 className="text-lg font-bold text-white group-hover:text-purple-300 transition-colors">
-                        {channel.name}
-                      </h3>
+                      <div className="flex items-center gap-2">
+                        <h3 className="text-lg font-bold text-white group-hover:text-purple-300 transition-colors">
+                          {channel.name}
+                        </h3>
+                        {channel.is_private && (
+                          <Lock className="w-4 h-4 text-purple-400" />
+                        )}
+                      </div>
                       <p className="text-sm text-gray-500">/channel/{channel.slug}</p>
                     </div>
                   </div>

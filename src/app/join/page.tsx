@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { Mail, Zap, Share2, ArrowRight, Key } from 'lucide-react';
+import { Mail, Zap, Share2, ArrowRight, Key, Lock, Eye, EyeOff } from 'lucide-react';
 
 const ICON_OPTIONS = ['📬', '📧', '📰', '🎬', '🛒', '💰', '🎮', '📱', '🎵', '📚', '✈️', '🍔', '⚽', '💼', '🎨'];
 const COLOR_OPTIONS = ['#3B82F6', '#EF4444', '#10B981', '#F59E0B', '#8B5CF6', '#EC4899', '#06B6D4', '#84CC16'];
@@ -12,6 +12,7 @@ export default function JoinPage() {
   const [inviteCode, setInviteCode] = useState('');
   const [inviteError, setInviteError] = useState('');
   const [isCheckingCode, setIsCheckingCode] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     slug: '',
@@ -19,6 +20,8 @@ export default function JoinPage() {
     keywords: '',
     icon: '📬',
     color: '#3B82F6',
+    isPrivate: false,
+    password: '',
   });
 
   const handleSlugChange = (value: string) => {
@@ -60,6 +63,12 @@ export default function JoinPage() {
   };
 
   const handleGoogleLogin = () => {
+    // 비밀번호 보호 설정 시 비밀번호 필수 확인
+    if (formData.isPrivate && !formData.password.trim()) {
+      alert('비밀번호를 입력해주세요');
+      return;
+    }
+
     // 채널 정보와 초대 코드를 세션에 저장하고 Google 로그인으로 이동
     sessionStorage.setItem('pending_channel', JSON.stringify({
       ...formData,
@@ -298,6 +307,62 @@ export default function JoinPage() {
                 </div>
               </div>
 
+              {/* 비밀번호 보호 설정 */}
+              <div className="border-t border-white/10 pt-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-3">
+                    <Lock className="w-5 h-5 text-gray-400" />
+                    <div>
+                      <label className="block text-sm font-medium text-gray-300">
+                        비밀번호 보호
+                      </label>
+                      <p className="text-xs text-gray-500">
+                        팀원끼리만 볼 수 있도록 비밀번호 설정
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setFormData({ 
+                      ...formData, 
+                      isPrivate: !formData.isPrivate,
+                      password: !formData.isPrivate ? formData.password : ''
+                    })}
+                    className={`relative w-12 h-6 rounded-full transition-colors ${
+                      formData.isPrivate ? 'bg-purple-600' : 'bg-white/20'
+                    }`}
+                  >
+                    <span 
+                      className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-transform ${
+                        formData.isPrivate ? 'translate-x-7' : 'translate-x-1'
+                      }`}
+                    />
+                  </button>
+                </div>
+
+                {formData.isPrivate && (
+                  <div className="relative">
+                    <input
+                      type={showPassword ? 'text' : 'password'}
+                      value={formData.password}
+                      onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                      placeholder="채널 접근 비밀번호 입력"
+                      className="w-full px-4 py-3 pr-12 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white"
+                    >
+                      {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                    </button>
+                    <p className="text-xs text-gray-400 mt-2">
+                      ⚠️ 비밀번호를 잊으면 채널 관리 페이지에서 변경할 수 있어요
+                    </p>
+                  </div>
+                )}
+              </div>
+
               {/* 미리보기 */}
               <div className="border-t border-white/10 pt-6">
                 <label className="block text-sm font-medium text-gray-300 mb-3">
@@ -312,10 +377,18 @@ export default function JoinPage() {
                 >
                   <div className="flex items-center gap-3">
                     <span className="text-3xl">{formData.icon}</span>
-                    <div>
-                      <h3 className="text-lg font-bold text-white">
-                        {formData.name || '채널 이름'}
-                      </h3>
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2">
+                        <h3 className="text-lg font-bold text-white">
+                          {formData.name || '채널 이름'}
+                        </h3>
+                        {formData.isPrivate && (
+                          <span className="px-2 py-0.5 bg-purple-500/30 text-purple-300 text-xs rounded-full flex items-center gap-1">
+                            <Lock className="w-3 h-3" />
+                            비공개
+                          </span>
+                        )}
+                      </div>
                       <p className="text-sm text-gray-400">
                         /channel/{formData.slug || 'my-channel'}
                       </p>
