@@ -83,10 +83,10 @@ export default function TermsPage() {
 
             <section className="pt-4 border-t border-white/20">
               <p className="text-sm text-gray-400">
-                본 약관은 2024년 1월 1일부터 시행됩니다.
+                본 약관은 2025년 1월 9일부터 시행됩니다.
               </p>
               <p className="text-sm text-gray-400 mt-1">
-                최종 수정일: 2024년 1월 6일
+                최종 수정일: 2025년 1월 9일
               </p>
             </section>
           </div>
@@ -104,6 +104,7 @@ export default function TermsPage() {
     </div>
   );
 }
+
 
 
 

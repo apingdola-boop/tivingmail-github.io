@@ -14,3 +14,4 @@ CREATE INDEX IF NOT EXISTS idx_channels_is_private ON channels(is_private);
 COMMENT ON COLUMN channels.password IS '채널 접근 비밀번호 (NULL이면 공개 채널)';
 COMMENT ON COLUMN channels.is_private IS '비공개 채널 여부';
 
+
