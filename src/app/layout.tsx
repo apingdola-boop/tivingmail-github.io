@@ -6,8 +6,8 @@ export const metadata: Metadata = {
   title: "MailBridge - 이메일 공유 플랫폼",
   description: "Gmail에서 특정 키워드가 포함된 이메일을 자동으로 공유 채널에 게시합니다.",
   icons: {
-    icon: "/bridge.png",
-    apple: "/bridge.png",
+    icon: "/bridge2.jpg",
+    apple: "/bridge2.jpg",
   },
 };
 

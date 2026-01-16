@@ -11,7 +11,7 @@ export default function LogoPage() {
           <div className="flex justify-center mb-6">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img 
-              src="/bridge.png" 
+              src="/bridge2.jpg" 
               alt="MailBridge Logo" 
               className="w-48 h-48 rounded-2xl"
             />
@@ -24,8 +24,8 @@ export default function LogoPage() {
           {/* 다운로드 버튼 */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <a 
-              href="/bridge.png" 
-              download="mailbridge-logo.png"
+              href="/bridge2.jpg" 
+              download="mailbridge-logo.jpg"
               className="inline-block px-8 py-4 bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-xl transition-colors"
             >
               📥 PNG 다운로드
