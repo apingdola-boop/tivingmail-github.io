@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>로고 미리보기</title>
+  <style>
+    body { 
+      display: flex; 
+      justify-content: center; 
+      align-items: center; 
+      min-height: 100vh; 
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      margin: 0;
+      flex-direction: column;
+      gap: 30px;
+    }
+    h1 { color: white; font-family: 'Segoe UI', sans-serif; }
+    .sizes { display: flex; gap: 40px; align-items: flex-end; }
+    .size-label { color: #a78bfa; font-family: sans-serif; text-align: center; margin-top: 10px; }
+  </style>
+</head>
+<body>
+  <h1>⛵ MailBridge 로고 미리보기</h1>
+  
+  <div class="sizes">
+    <div>
+      <svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- 배경 원 - 보라색 그라데이션 -->
+        <circle cx="256" cy="256" r="256" fill="url(#bgGradient)"/>
+        
+        <!-- 바다 물결 3 (가장 뒤, 연한) -->
+        <path d="M0 280 Q80 250 160 280 Q240 310 320 280 Q400 250 480 280 Q512 290 512 290 L512 512 L0 512 Z" fill="url(#waveGradient1)" opacity="0.5"/>
+        
+        <!-- 바다 물결 2 (중간) -->
+        <path d="M0 320 Q100 360 200 320 Q300 280 400 320 Q450 340 512 310 L512 512 L0 512 Z" fill="url(#waveGradient2)" opacity="0.7"/>
+        
+        <!-- 바다 물결 1 (가장 앞, 진한) -->
+        <path d="M0 380 Q80 340 160 380 Q240 420 320 380 Q400 340 512 390 L512 512 L0 512 Z" fill="url(#waveGradient3)" opacity="0.85"/>
+        
+        <!-- 범선 그룹 -->
+        <g transform="translate(256, 260)">
+          <!-- 배 몸체 -->
+          <path d="M-70 40 L-50 80 L50 80 L70 40 Z" fill="white" opacity="0.95"/>
+          
+          <!-- 돛대 -->
+          <rect x="-3" y="-120" width="6" height="160" fill="white" opacity="0.9"/>
+          
+          <!-- 메인 돛 (삼각형) -->
+          <path d="M0 -110 L0 30 L-65 30 Z" fill="white" opacity="0.95"/>
+          
+          <!-- 메인 돛 라인 -->
+          <path d="M0 -110 L0 30 L-65 30 Z" stroke="#d8b4fe" stroke-width="2" fill="none" opacity="0.5"/>
+          
+          <!-- 작은 뒤쪽 돛 -->
+          <path d="M0 -80 L0 20 L40 20 Z" fill="white" opacity="0.9"/>
+          
+          <!-- @ 깃발 -->
+          <g transform="translate(3, -120)">
+            <!-- 깃발 배경 -->
+            <path d="M0 0 L50 10 L50 40 L0 30 Z" fill="white" opacity="0.95"/>
+            
+            <!-- @ 기호 -->
+            <text x="25" y="28" font-family="Arial, sans-serif" font-size="24" font-weight="500" fill="#a78bfa" text-anchor="middle">@</text>
+          </g>
+        </g>
+        
+        <!-- 그라데이션 정의 -->
+        <defs>
+          <linearGradient id="bgGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" style="stop-color:#c4b5fd"/>
+            <stop offset="50%" style="stop-color:#a78bfa"/>
+            <stop offset="100%" style="stop-color:#8b5cf6"/>
+          </linearGradient>
+          
+          <linearGradient id="waveGradient1" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" style="stop-color:#a78bfa"/>
+            <stop offset="100%" style="stop-color:#7c3aed"/>
+          </linearGradient>
+          
+          <linearGradient id="waveGradient2" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" style="stop-color:#8b5cf6"/>
+            <stop offset="100%" style="stop-color:#6d28d9"/>
+          </linearGradient>
+          
+          <linearGradient id="waveGradient3" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" style="stop-color:#7c3aed"/>
+            <stop offset="100%" style="stop-color:#5b21b6"/>
+          </linearGradient>
+        </defs>
+      </svg>
+      <p class="size-label">512 x 512</p>
+    </div>
+    
+    <div>
+      <svg width="128" height="128" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="256" cy="256" r="256" fill="url(#bgGradient2)"/>
+        <path d="M0 280 Q80 250 160 280 Q240 310 320 280 Q400 250 480 280 Q512 290 512 290 L512 512 L0 512 Z" fill="url(#waveGradient1b)" opacity="0.5"/>
+        <path d="M0 320 Q100 360 200 320 Q300 280 400 320 Q450 340 512 310 L512 512 L0 512 Z" fill="url(#waveGradient2b)" opacity="0.7"/>
+        <path d="M0 380 Q80 340 160 380 Q240 420 320 380 Q400 340 512 390 L512 512 L0 512 Z" fill="url(#waveGradient3b)" opacity="0.85"/>
+        <g transform="translate(256, 260)">
+          <path d="M-70 40 L-50 80 L50 80 L70 40 Z" fill="white" opacity="0.95"/>
+          <rect x="-3" y="-120" width="6" height="160" fill="white" opacity="0.9"/>
+          <path d="M0 -110 L0 30 L-65 30 Z" fill="white" opacity="0.95"/>
+          <path d="M0 -80 L0 20 L40 20 Z" fill="white" opacity="0.9"/>
+          <g transform="translate(3, -120)">
+            <path d="M0 0 L50 10 L50 40 L0 30 Z" fill="white" opacity="0.95"/>
+            <text x="25" y="28" font-family="Arial, sans-serif" font-size="24" font-weight="500" fill="#a78bfa" text-anchor="middle">@</text>
+          </g>
+        </g>
+        <defs>
+          <linearGradient id="bgGradient2" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" style="stop-color:#c4b5fd"/>
+            <stop offset="50%" style="stop-color:#a78bfa"/>
+            <stop offset="100%" style="stop-color:#8b5cf6"/>
+          </linearGradient>
+          <linearGradient id="waveGradient1b" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" style="stop-color:#a78bfa"/>
+            <stop offset="100%" style="stop-color:#7c3aed"/>
+          </linearGradient>
+          <linearGradient id="waveGradient2b" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" style="stop-color:#8b5cf6"/>
+            <stop offset="100%" style="stop-color:#6d28d9"/>
+          </linearGradient>
+          <linearGradient id="waveGradient3b" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" style="stop-color:#7c3aed"/>
+            <stop offset="100%" style="stop-color:#5b21b6"/>
+          </linearGradient>
+        </defs>
+      </svg>
+      <p class="size-label">128 x 128</p>
+    </div>
+    
+    <div>
+      <svg width="64" height="64" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="256" cy="256" r="256" fill="url(#bgGradient3)"/>
+        <path d="M0 280 Q80 250 160 280 Q240 310 320 280 Q400 250 480 280 Q512 290 512 290 L512 512 L0 512 Z" fill="url(#waveGradient1c)" opacity="0.5"/>
+        <path d="M0 320 Q100 360 200 320 Q300 280 400 320 Q450 340 512 310 L512 512 L0 512 Z" fill="url(#waveGradient2c)" opacity="0.7"/>
+        <path d="M0 380 Q80 340 160 380 Q240 420 320 380 Q400 340 512 390 L512 512 L0 512 Z" fill="url(#waveGradient3c)" opacity="0.85"/>
+        <g transform="translate(256, 260)">
+          <path d="M-70 40 L-50 80 L50 80 L70 40 Z" fill="white" opacity="0.95"/>
+          <rect x="-3" y="-120" width="6" height="160" fill="white" opacity="0.9"/>
+          <path d="M0 -110 L0 30 L-65 30 Z" fill="white" opacity="0.95"/>
+          <path d="M0 -80 L0 20 L40 20 Z" fill="white" opacity="0.9"/>
+          <g transform="translate(3, -120)">
+            <path d="M0 0 L50 10 L50 40 L0 30 Z" fill="white" opacity="0.95"/>
+            <text x="25" y="28" font-family="Arial, sans-serif" font-size="24" font-weight="500" fill="#a78bfa" text-anchor="middle">@</text>
+          </g>
+        </g>
+        <defs>
+          <linearGradient id="bgGradient3" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" style="stop-color:#c4b5fd"/>
+            <stop offset="50%" style="stop-color:#a78bfa"/>
+            <stop offset="100%" style="stop-color:#8b5cf6"/>
+          </linearGradient>
+          <linearGradient id="waveGradient1c" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" style="stop-color:#a78bfa"/>
+            <stop offset="100%" style="stop-color:#7c3aed"/>
+          </linearGradient>
+          <linearGradient id="waveGradient2c" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" style="stop-color:#8b5cf6"/>
+            <stop offset="100%" style="stop-color:#6d28d9"/>
+          </linearGradient>
+          <linearGradient id="waveGradient3c" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" style="stop-color:#7c3aed"/>
+            <stop offset="100%" style="stop-color:#5b21b6"/>
+          </linearGradient>
+        </defs>
+      </svg>
+      <p class="size-label">64 x 64</p>
+    </div>
+  </div>
+</body>
+</html>
