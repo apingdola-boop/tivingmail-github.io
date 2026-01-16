@@ -46,7 +46,7 @@ export default function Home() {
       <header className="border-b border-white/10 backdrop-blur-sm sticky top-0 z-50">
         <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
           <Link href="/" className="text-2xl font-bold text-white flex items-center gap-2">
-            <img src="/logo.svg" alt="MailBridge" className="w-8 h-8" />
+            <img src="/bridge.png" alt="MailBridge" className="w-8 h-8 rounded-lg" />
             MailBridge
           </Link>
           <div className="flex items-center gap-4">

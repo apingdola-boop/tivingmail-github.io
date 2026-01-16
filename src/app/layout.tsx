@@ -3,8 +3,12 @@ import "./globals.css";
 import Footer from "@/components/Footer";
 
 export const metadata: Metadata = {
-  title: "메일브릿지 - 이메일 정보 공유 플랫폼",
-  description: "이메일로 받은 유용한 정보를 다른 사람들과 쉽게 공유하세요",
+  title: "MailBridge - 이메일 공유 플랫폼",
+  description: "Gmail에서 특정 키워드가 포함된 이메일을 자동으로 공유 채널에 게시합니다.",
+  icons: {
+    icon: "/bridge.png",
+    apple: "/bridge.png",
+  },
 };
 
 export default function RootLayout({

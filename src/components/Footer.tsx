@@ -9,7 +9,10 @@ export default function Footer() {
         <div className="flex flex-col md:flex-row justify-between items-center gap-4">
           {/* 로고 및 저작권 */}
           <div className="text-center md:text-left">
-            <h3 className="text-lg font-bold text-white">📧 MailBridge</h3>
+            <h3 className="text-lg font-bold text-white flex items-center gap-2">
+              <img src="/bridge.png" alt="MailBridge" className="w-6 h-6 rounded" />
+              MailBridge
+            </h3>
             <p className="text-gray-400 text-sm mt-1">
               이메일 공유 플랫폼
             </p>
