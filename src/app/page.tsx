@@ -70,9 +70,15 @@ export default function Home() {
       <section className="bg-gradient-to-r from-purple-600/20 to-pink-600/20 border-b border-white/10 py-4 px-4">
         <div className="max-w-4xl mx-auto text-center">
           <p className="text-gray-300">
-            <strong className="text-white">MailBridge</strong>는 Gmail 이메일을 쉽게 공유할 수 있는 플랫폼입니다. 
-            티빙·넷플릭스 임시 인증 코드를 간편하게 공유할 수 있어요.
-            자세한 사항은 아래 블로그나 문의/요청 접수에서 문의해주세요.
+            <span className="block">
+              <strong className="text-white">MailBridge</strong>는 Gmail 이메일을 쉽게 공유할 수 있는 플랫폼입니다.
+            </span>
+            <span className="block">
+              티빙·넷플릭스 임시 인증 코드를 간편하게 공유할 수 있어요.
+            </span>
+            <span className="block">
+              자세한 사항은 아래 블로그나 문의/요청 접수에서 문의해주세요.
+            </span>
           </p>
         </div>
       </section>

@@ -38,7 +38,7 @@ export default function Footer() {
               </a>
             </div>
             <div className="flex flex-col gap-2">
-              <span className="text-gray-300 font-semibold">정책</span>
+              <span className="text-white text-lg font-bold">정책</span>
               <Link 
                 href="/privacy" 
                 className="text-gray-400 hover:text-white transition-colors"
