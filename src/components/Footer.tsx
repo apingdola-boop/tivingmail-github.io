@@ -29,7 +29,7 @@ export default function Footer() {
                 문의/요청 접수
               </Link>
               <a
-                href="https://blog.naver.com/happypaang"
+                href="https://m.blog.naver.com/happypaang/224157135906"
                 target="_blank"
                 rel="noreferrer"
                 className="text-gray-400 hover:text-white transition-colors"
