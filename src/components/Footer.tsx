@@ -36,12 +36,6 @@ export default function Footer() {
               >
                 블로그
               </a>
-              <a
-                href="mailto:apingdola@gmail.com"
-                className="text-gray-400 hover:text-white transition-colors"
-              >
-                문의하기
-              </a>
             </div>
             <div className="flex flex-col gap-2">
               <span className="text-gray-300 font-semibold">정책</span>
