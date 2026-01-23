@@ -20,6 +20,8 @@ export default function InviteCodesPage() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [generateCount, setGenerateCount] = useState(1);
   const [message, setMessage] = useState('');
+  const [inviteRequired, setInviteRequired] = useState<boolean | null>(null);
+  const [isSavingSetting, setIsSavingSetting] = useState(false);
 
   const fetchCodes = async () => {
     try {
@@ -33,8 +35,20 @@ export default function InviteCodesPage() {
     }
   };
 
+  const fetchInviteSetting = async () => {
+    try {
+      const res = await fetch('/api/admin/settings');
+      const data = await res.json();
+      setInviteRequired(Boolean(data.inviteRequired));
+    } catch (error) {
+      console.error('설정 로드 실패:', error);
+      setInviteRequired(false);
+    }
+  };
+
   useEffect(() => {
     fetchCodes();
+    fetchInviteSetting();
   }, []);
 
   const handleGenerate = async () => {
@@ -95,6 +109,38 @@ export default function InviteCodesPage() {
     });
   };
 
+  const handleToggleInviteRequired = async () => {
+    if (inviteRequired === null) {
+      return;
+    }
+
+    const nextValue = !inviteRequired;
+    setIsSavingSetting(true);
+    setMessage('');
+
+    try {
+      const res = await fetch('/api/admin/settings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ inviteRequired: nextValue }),
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        setInviteRequired(nextValue);
+        setMessage(nextValue ? '✅ 초대 코드가 필수가 되었습니다' : '✅ 초대 코드 없이 생성 가능');
+      } else {
+        setMessage(`❌ 설정 저장 실패: ${data.error || '알 수 없는 오류'}`);
+      }
+    } catch (error) {
+      console.error('설정 저장 오류:', error);
+      setMessage(`❌ 설정 저장 실패: ${error instanceof Error ? error.message : '네트워크 오류'}`);
+    } finally {
+      setIsSavingSetting(false);
+    }
+  };
+
   const availableCount = codes.filter(c => !c.is_used).length;
   const usedCount = codes.filter(c => c.is_used).length;
 
@@ -116,6 +162,35 @@ export default function InviteCodesPage() {
         <main className="max-w-4xl mx-auto px-4 py-8">
           <h1 className="text-3xl font-bold text-white mb-2">🎟️ 초대 코드 관리</h1>
           <p className="text-gray-400 mb-8">초대 코드를 생성하고 관리하세요</p>
+
+          {/* 초대 코드 필수 여부 */}
+          <div className="bg-white/5 border border-white/10 rounded-xl p-6 mb-8">
+            <div className="flex items-center justify-between gap-6">
+              <div>
+                <h2 className="text-lg font-bold text-white mb-1">초대 코드 필수 설정</h2>
+                <p className="text-gray-400 text-sm">
+                  {inviteRequired ? '채널 생성 시 초대 코드가 필요합니다' : '초대 코드 없이 채널 생성 가능합니다'}
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={handleToggleInviteRequired}
+                disabled={inviteRequired === null || isSavingSetting}
+                className={`relative w-14 h-7 rounded-full transition-colors ${
+                  inviteRequired ? 'bg-purple-600' : 'bg-white/20'
+                } ${inviteRequired === null ? 'opacity-50 cursor-not-allowed' : ''}`}
+              >
+                <span
+                  className={`absolute top-1 w-5 h-5 bg-white rounded-full transition-transform ${
+                    inviteRequired ? 'translate-x-8' : 'translate-x-1'
+                  }`}
+                />
+              </button>
+            </div>
+            <p className="text-xs text-gray-500 mt-3">
+              🔒 현재는 “관리자 페이지에서만” 변경 가능합니다
+            </p>
+          </div>
 
           {/* 통계 */}
           <div className="grid grid-cols-3 gap-4 mb-8">
