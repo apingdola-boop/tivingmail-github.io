@@ -21,7 +21,7 @@ export default function Footer() {
           {/* 링크/고객지원 */}
           <div className="flex flex-col md:flex-row gap-6 text-sm text-center md:text-left">
             <div className="flex flex-col gap-2">
-              <span className="text-gray-300 font-semibold">고객지원</span>
+              <span className="text-white text-lg font-bold">고객지원</span>
               <Link
                 href="/support"
                 className="text-gray-400 hover:text-white transition-colors"
@@ -34,7 +34,7 @@ export default function Footer() {
                 rel="noreferrer"
                 className="text-gray-400 hover:text-white transition-colors"
               >
-                민원/응대 블로그
+                블로그
               </a>
               <a
                 href="mailto:apingdola@gmail.com"
