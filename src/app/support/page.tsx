@@ -1,4 +1,43 @@
+'use client';
+
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+
 export default function SupportPage() {
+  const router = useRouter();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState('');
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setSubmitError('');
+    setIsSubmitting(true);
+
+    try {
+      const form = event.currentTarget;
+      const formData = new FormData(form);
+      const params = new URLSearchParams();
+
+      formData.forEach((value, key) => {
+        if (typeof value === 'string') {
+          params.append(key, value);
+        }
+      });
+
+      await fetch('/__forms.html', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: params.toString(),
+      });
+
+      router.push('/support/thanks');
+    } catch (error) {
+      setSubmitError('접수 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
       <main className="max-w-2xl mx-auto px-4 py-16">
@@ -11,13 +50,10 @@ export default function SupportPage() {
           <form
             name="support"
             method="POST"
-            data-netlify="true"
-            data-netlify-honeypot="bot-field"
-            action="/support/thanks"
+            onSubmit={handleSubmit}
             className="space-y-5"
           >
             <input type="hidden" name="form-name" value="support" />
-
             <input type="hidden" name="bot-field" />
 
             <div>
@@ -77,10 +113,15 @@ export default function SupportPage() {
 
             <button
               type="submit"
+              disabled={isSubmitting}
               className="w-full py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold rounded-xl transition-all"
             >
-              접수하기
+              {isSubmitting ? '접수 중...' : '접수하기'}
             </button>
+
+            {submitError && (
+              <p className="text-sm text-red-300 text-center">{submitError}</p>
+            )}
           </form>
         </div>
       </main>
