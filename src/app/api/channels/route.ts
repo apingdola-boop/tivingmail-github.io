@@ -60,8 +60,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 🔒 사용자당 채널 개수 제한 (최대 2개)
-    const MAX_CHANNELS_PER_USER = 2;
+    // 🔒 사용자당 채널 개수 제한 (최대 1개)
+    const MAX_CHANNELS_PER_USER = 1;
     const { data: userChannels, error: countError } = await supabase
       .from('channels')
       .select('id')

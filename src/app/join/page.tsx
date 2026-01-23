@@ -2,16 +2,13 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { Mail, Zap, Share2, ArrowRight, Key, Lock, Eye, EyeOff } from 'lucide-react';
+import { Mail, Zap, Share2, ArrowRight, Lock, Eye, EyeOff } from 'lucide-react';
 
 const ICON_OPTIONS = ['📬', '📧', '📰', '🎬', '🛒', '💰', '🎮', '📱', '🎵', '📚', '✈️', '🍔', '⚽', '💼', '🎨'];
 const COLOR_OPTIONS = ['#3B82F6', '#EF4444', '#10B981', '#F59E0B', '#8B5CF6', '#EC4899', '#06B6D4', '#84CC16'];
 
 export default function JoinPage() {
-  const [step, setStep] = useState<'invite' | 'info' | 'form'>('invite');
-  const [inviteCode, setInviteCode] = useState('');
-  const [inviteError, setInviteError] = useState('');
-  const [isCheckingCode, setIsCheckingCode] = useState(false);
+  const [step, setStep] = useState<'info' | 'form'>('info');
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
@@ -29,39 +26,6 @@ export default function JoinPage() {
     setFormData({ ...formData, slug });
   };
 
-  // 초대 코드 확인
-  const handleCheckInviteCode = async () => {
-    if (!inviteCode.trim()) {
-      setInviteError('초대 코드를 입력하세요');
-      return;
-    }
-
-    setIsCheckingCode(true);
-    setInviteError('');
-
-    try {
-      const res = await fetch('/api/invite/check', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ code: inviteCode }),
-      });
-
-      const data = await res.json();
-
-      if (!data.valid) {
-        setInviteError(data.error || '유효하지 않은 코드입니다');
-        return;
-      }
-
-      // 코드 유효 - 다음 단계로
-      setStep('info');
-    } catch (error) {
-      setInviteError('코드 확인에 실패했습니다');
-    } finally {
-      setIsCheckingCode(false);
-    }
-  };
-
   const handleGoogleLogin = () => {
     // 비밀번호 보호 설정 시 비밀번호 필수 확인
     if (formData.isPrivate && !formData.password.trim()) {
@@ -69,10 +33,9 @@ export default function JoinPage() {
       return;
     }
 
-    // 채널 정보와 초대 코드를 세션에 저장하고 Google 로그인으로 이동
+    // 채널 정보를 세션에 저장하고 Google 로그인으로 이동
     sessionStorage.setItem('pending_channel', JSON.stringify({
       ...formData,
-      inviteCode: inviteCode,
     }));
     window.location.href = '/api/auth/google?redirect=/join/complete';
   };
@@ -88,48 +51,7 @@ export default function JoinPage() {
         </div>
       </header>
 
-      {step === 'invite' ? (
-        /* 초대 코드 입력 */
-        <main className="max-w-md mx-auto px-4 py-20">
-          <div className="bg-white/10 backdrop-blur-md rounded-2xl p-8 border border-white/20 text-center">
-            <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
-              <Key className="w-10 h-10 text-white" />
-            </div>
-            
-            <h1 className="text-2xl font-bold text-white mb-2">초대 코드 입력</h1>
-            <p className="text-gray-400 mb-6">
-              채널을 만들려면 초대 코드가 필요합니다
-            </p>
-
-            {inviteError && (
-              <div className="bg-red-500/20 border border-red-500/50 rounded-lg p-3 mb-4">
-                <p className="text-red-300 text-sm">{inviteError}</p>
-              </div>
-            )}
-
-            <input
-              type="text"
-              value={inviteCode}
-              onChange={(e) => setInviteCode(e.target.value.toUpperCase())}
-              placeholder="초대 코드 입력"
-              className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white text-center text-xl tracking-widest placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 mb-4"
-              maxLength={10}
-            />
-
-            <button
-              onClick={handleCheckInviteCode}
-              disabled={isCheckingCode}
-              className="w-full py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold rounded-xl transition-all disabled:opacity-50"
-            >
-              {isCheckingCode ? '확인 중...' : '확인'}
-            </button>
-
-            <p className="text-gray-500 text-xs mt-6">
-              초대 코드는 관리자에게 요청하세요
-            </p>
-          </div>
-        </main>
-      ) : step === 'info' ? (
+      {step === 'info' ? (
         /* 소개 페이지 */
         <main className="max-w-4xl mx-auto px-4 py-12">
           <div className="text-center mb-12">
@@ -138,6 +60,9 @@ export default function JoinPage() {
             </h1>
             <p className="text-xl text-gray-400">
               Google 로그인 한 번으로 특정 이메일을 자동 공유하는 채널을 만들 수 있어요
+            </p>
+            <p className="text-sm text-purple-200/80 mt-3">
+              현재는 임시로 초대 코드 없이 채널 생성이 가능합니다.
             </p>
           </div>
 
