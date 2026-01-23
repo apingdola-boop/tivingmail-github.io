@@ -6,7 +6,7 @@ export default function Footer() {
   return (
     <footer className="bg-gray-900/50 border-t border-white/10 py-8 mt-auto">
       <div className="max-w-6xl mx-auto px-4">
-        <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+        <div className="flex flex-col md:flex-row justify-between items-center gap-6">
           {/* 로고 및 저작권 */}
           <div className="text-center md:text-left">
             <h3 className="text-lg font-bold text-white flex items-center gap-2">
@@ -18,20 +18,40 @@ export default function Footer() {
             </p>
           </div>
 
-          {/* 링크 */}
-          <div className="flex gap-6 text-sm">
-            <Link 
-              href="/privacy" 
-              className="text-gray-400 hover:text-white transition-colors"
-            >
-              개인정보처리방침
-            </Link>
-            <Link 
-              href="/terms" 
-              className="text-gray-400 hover:text-white transition-colors"
-            >
-              이용약관
-            </Link>
+          {/* 링크/고객지원 */}
+          <div className="flex flex-col md:flex-row gap-6 text-sm text-center md:text-left">
+            <div className="flex flex-col gap-2">
+              <span className="text-gray-300 font-semibold">고객지원</span>
+              <a
+                href="https://blog.naver.com/happypaang"
+                target="_blank"
+                rel="noreferrer"
+                className="text-gray-400 hover:text-white transition-colors"
+              >
+                민원/응대 블로그
+              </a>
+              <a
+                href="mailto:apingdola@gmail.com"
+                className="text-gray-400 hover:text-white transition-colors"
+              >
+                문의하기
+              </a>
+            </div>
+            <div className="flex flex-col gap-2">
+              <span className="text-gray-300 font-semibold">정책</span>
+              <Link 
+                href="/privacy" 
+                className="text-gray-400 hover:text-white transition-colors"
+              >
+                개인정보처리방침
+              </Link>
+              <Link 
+                href="/terms" 
+                className="text-gray-400 hover:text-white transition-colors"
+              >
+                이용약관
+              </Link>
+            </div>
           </div>
 
           {/* 저작권 */}
