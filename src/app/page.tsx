@@ -71,7 +71,8 @@ export default function Home() {
         <div className="max-w-4xl mx-auto text-center">
           <p className="text-gray-300">
             <strong className="text-white">MailBridge</strong>는 Gmail 이메일을 쉽게 공유할 수 있는 플랫폼입니다. 
-            특정 키워드가 포함된 이메일을 자동으로 공유 채널에 게시할 수 있습니다.
+            티빙·넷플릭스 임시 인증 코드를 간편하게 공유할 수 있어요.
+            자세한 사항은 아래 블로그나 문의/요청 접수에서 문의해주세요.
           </p>
         </div>
       </section>
@@ -100,9 +101,9 @@ export default function Home() {
 
           {/* 서브 타이틀 */}
           <p className="text-xl text-gray-400 mb-10 max-w-2xl mx-auto">
-            Gmail에서 특정 키워드가 포함된 이메일을 자동으로 공유 채널에 게시합니다.
+            티빙·넷플릭스 임시 인증 코드를 간편하게 공유할 수 있는 이메일 공유 플랫폼입니다.
             <br />
-            채널 링크만 공유하면 누구나 로그인 없이 이메일 내용을 볼 수 있어요!
+            자세한 사항은 아래 블로그 또는 문의/요청 접수에서 확인해 주세요.
           </p>
 
           {/* CTA 버튼 */}

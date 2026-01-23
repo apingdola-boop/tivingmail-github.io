@@ -95,10 +95,10 @@ export default function PrivacyPage() {
 
             <section className="pt-4 border-t border-white/20">
               <p className="text-sm text-gray-400">
-                본 개인정보처리방침은 2025년 1월 9일부터 시행됩니다.
+                본 개인정보처리방침은 2026년 1월 9일부터 시행됩니다.
               </p>
               <p className="text-sm text-gray-400 mt-1">
-                최종 수정일: 2025년 1월 9일
+                최종 수정일: 2026년 1월 9일
               </p>
             </section>
           </div>
