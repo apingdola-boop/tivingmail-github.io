@@ -22,6 +22,12 @@ export default function Footer() {
           <div className="flex flex-col md:flex-row gap-6 text-sm text-center md:text-left">
             <div className="flex flex-col gap-2">
               <span className="text-gray-300 font-semibold">고객지원</span>
+              <Link
+                href="/support"
+                className="text-gray-400 hover:text-white transition-colors"
+              >
+                문의/요청 접수
+              </Link>
               <a
                 href="https://blog.naver.com/happypaang"
                 target="_blank"
